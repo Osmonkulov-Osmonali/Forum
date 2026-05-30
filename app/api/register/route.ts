@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
       data: {
         firstName,
         lastName,
-        email: email || null,
+        ...(email ? { email } : {}),
         phone,
         format,
       },

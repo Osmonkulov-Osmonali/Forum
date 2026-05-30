@@ -12,8 +12,9 @@ const SESSION_MS             = SESSION_MAX_AGE * 1000;
 
 // ── Base64url helpers ──────────────────────────────────────────────────────────
 
-function b64uEncode(buf: ArrayBuffer): string {
-  return btoa(String.fromCharCode(...new Uint8Array(buf)))
+function b64uEncode(buf: ArrayBuffer | Uint8Array): string {
+  const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
+  return btoa(String.fromCharCode(...bytes))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=/g, "");

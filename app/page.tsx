@@ -4,6 +4,7 @@ import { SmoothScroll }    from "@/components/SmoothScroll";
 import { Header }          from "@/components/forum/Header";
 import { Hero }            from "@/components/forum/Hero";
 import { About }           from "@/components/forum/About";
+import { GlobeDynamic }    from "@/components/forum/GlobeDynamic";
 import { SpeakersSection } from "@/components/forum/SpeakersSection";
 import { Footer }          from "@/components/forum/Footer";
 
@@ -17,24 +18,8 @@ import { Footer }          from "@/components/forum/Footer";
   streaming skeletons instead.
 */
 
-// Globe uses Three.js — must be client-only (ssr: false)
-const GlobeSection = dynamic(
-  () => import("@/components/forum/InteractiveGlobe").then((m) => ({ default: m.InteractiveGlobe })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="relative h-[440px] overflow-hidden bg-[#020810] md:h-[640px]" aria-hidden>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="size-[280px] animate-pulse rounded-full bg-[#ff6b00]/5 md:size-[420px]" />
-        </div>
-        <div className="absolute left-4 top-6 space-y-2 sm:left-8">
-          <div className="h-3 w-28 animate-pulse bg-[#ff6b00]/20" />
-          <div className="h-6 w-40 animate-pulse bg-white/10" />
-        </div>
-      </div>
-    ),
-  }
-);
+// Globe uses Three.js — ssr:false lives in GlobeDynamic (Client Component)
+// because Next.js 16 forbids dynamic({ssr:false}) in Server Components.
 
 const Partners = dynamic(
   () => import("@/components/forum/Partners").then((m) => ({ default: m.Partners })),
@@ -165,7 +150,7 @@ export default function ForumLanding() {
         <Hero />
 
         {/* Globe WOW-block — Three.js, client-only, after Hero */}
-        <GlobeSection />
+        <GlobeDynamic />
 
         <About />
 

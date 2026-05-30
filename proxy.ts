@@ -9,7 +9,7 @@ import { verifySessionToken, SESSION_COOKIE } from "@/lib/session";
  *  - GET /api/speakers     → public (landing page reads speakers)
  *  - everything else       → requires valid admin_session cookie
  */
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // ── Always-public paths ──────────────────────────────────────────────────────
