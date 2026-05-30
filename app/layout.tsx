@@ -12,7 +12,7 @@ const inter = Inter({
 const geistSans = GeistSans
 
 export const metadata: Metadata = {
-  title: 'FORUM 2025 — Масштабный форум года',
+  title: 'FORUM 2026 — Масштабный форум года',
   description: 'Крупнейший форум для лидеров индустрии. 1000+ участников, 16+ спикеров.',
   generator: 'v0.app',
   icons: {

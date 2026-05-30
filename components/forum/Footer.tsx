@@ -7,7 +7,7 @@ const SOCIAL = [
   {
     id: "telegram",
     label: "Telegram",
-    href: "https://t.me/forum2025",
+    href: "https://t.me/forum2026",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="size-4">
         <path d="M11.944 0A12 12 0 1 0 24 12 12 12 0 0 0 11.944 0zm5.992 8.17-2.04 9.608c-.15.67-.54.833-1.093.518l-3.017-2.222-1.456 1.4c-.16.16-.297.295-.61.295l.217-3.075 5.6-5.055c.243-.217-.054-.337-.375-.12L7.36 14.27l-2.97-.927c-.644-.2-.658-.644.135-.953l11.635-4.486c.537-.195 1.007.13.835.952l.001.314z" />
@@ -17,7 +17,7 @@ const SOCIAL = [
   {
     id: "instagram",
     label: "Instagram",
-    href: "https://instagram.com/forum2025",
+    href: "https://instagram.com/forum2026",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="size-4">
         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
@@ -36,8 +36,8 @@ const SOCIAL = [
   },
   {
     id: "email",
-    label: "hello@forum2025.ru",
-    href: "mailto:hello@forum2025.ru",
+    label: "hello@forum2026.ru",
+    href: "mailto:hello@forum2026.ru",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className="size-4">
         <rect x="2" y="4" width="20" height="16" rx="1" />
@@ -184,10 +184,10 @@ export function Footer() {
             {/* Brand */}
             <div>
               <p className="font-sans text-base font-semibold tracking-tight text-[#1E293B]">
-                FORUM 2025
+                FORUM 2026
               </p>
               <p className="mt-1 font-sans text-xs text-muted-foreground">
-                15–16 октября · Москва
+                15–16 октября · Бишкек
               </p>
             </div>
 
@@ -223,7 +223,7 @@ export function Footer() {
           {/* Copyright + legal */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="font-sans text-xs text-muted-foreground">
-              © {new Date().getFullYear()} FORUM 2025. Все права защищены.
+              © {new Date().getFullYear()} FORUM 2026. Все права защищены.
             </p>
             <nav aria-label="Правовые документы">
               <ul className="flex flex-wrap gap-x-6 gap-y-2">

@@ -178,7 +178,7 @@ const hall2: Session[] = [
   {
     id: "h2-7",
     time: "15:00 – 15:50",
-    title: "B2B-продажи в 2025: что изменилось и что работает",
+    title: "B2B-продажи в 2026: что изменилось и что работает",
     speaker: "Юлия Романова",
     speakerRole: "Head of Sales, SaaS Global",
     description:
@@ -348,7 +348,7 @@ export function Schedule() {
             Расписание форума
           </h2>
           <p className="font-sans text-base text-muted-foreground">
-            15–16 октября 2025 · Москва, Конгресс-центр
+            15–16 октября 2026 · Бишкек, Технопарк
           </p>
         </div>
 

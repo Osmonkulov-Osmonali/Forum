@@ -23,8 +23,8 @@ const item: Variants = {
 };
 
 const META = [
-  { icon: CalendarDays, text: "15–16 октября 2025" },
-  { icon: MapPin, text: "Москва, Конгресс-центр" },
+  { icon: CalendarDays, text: "15–16 октября 2026" },
+  { icon: MapPin, text: "Бишкек, Технопарк" },
   { icon: Users, text: "1 000+ участников" },
 ];
 
@@ -65,7 +65,7 @@ export function Hero() {
           className="mb-6 font-heading text-[clamp(3.5rem,12vw,8rem)] font-semibold leading-none tracking-tight text-foreground-dark"
         >
           FORUM
-          <span className="block text-[#8ECAE6]">2025</span>
+          <span className="block text-[#8ECAE6]">2026</span>
         </motion.h1>
 
         {/* Subheading — strong offer */}

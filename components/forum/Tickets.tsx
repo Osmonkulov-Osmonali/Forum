@@ -49,7 +49,7 @@ const tiers: Tier[] = [
     ],
     featured: false,
     href: "https://tickets.example.com/buy",
-    utm: { source: "landing", medium: "button", campaign: "forum2025", content: "standard" },
+    utm: { source: "landing", medium: "button", campaign: "forum2026", content: "standard" },
   },
   {
     id: "business",
@@ -68,7 +68,7 @@ const tiers: Tier[] = [
     ],
     featured: true,
     href: "https://tickets.example.com/buy",
-    utm: { source: "landing", medium: "button", campaign: "forum2025", content: "business" },
+    utm: { source: "landing", medium: "button", campaign: "forum2026", content: "business" },
   },
   {
     id: "vip",
@@ -87,7 +87,7 @@ const tiers: Tier[] = [
     ],
     featured: false,
     href: "https://tickets.example.com/buy",
-    utm: { source: "landing", medium: "button", campaign: "forum2025", content: "vip" },
+    utm: { source: "landing", medium: "button", campaign: "forum2026", content: "vip" },
   },
 ];
 
@@ -103,7 +103,7 @@ export function Tickets() {
             Выберите тариф
           </h2>
           <p className="font-sans text-base text-muted-foreground">
-            Ранняя птица действует до 1 сентября 2025
+            Ранняя птица действует до 1 сентября 2026
           </p>
         </div>
 
@@ -191,7 +191,7 @@ export function Tickets() {
         <p className="mt-8 font-sans text-xs text-muted-foreground/70">
           Корпоративные тарифы для команд от 5 человек —{" "}
           <a
-            href="mailto:tickets@forum2025.ru"
+            href="mailto:tickets@forum2026.ru"
             className="underline underline-offset-2 transition-colors hover:text-foreground"
           >
             пишите нам

@@ -34,7 +34,7 @@ export function Header() {
           href="#"
           className="font-heading text-lg font-semibold tracking-tight text-foreground-dark select-none"
         >
-          FORUM 2025
+          FORUM 2026
         </a>
 
         {/* Anchor navigation — hidden on mobile */}
