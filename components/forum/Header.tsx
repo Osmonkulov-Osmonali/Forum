@@ -6,10 +6,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
-  { label: "О событии", href: "#about" },
-  { label: "Спикеры", href: "#speakers" },
-  { label: "Программа", href: "#schedule" },
-  { label: "Билеты", href: "#tickets" },
+  { label: "О событии",   href: "#about" },
+  { label: "Спикеры",    href: "#speakers" },
+  { label: "Программа",  href: "#schedule" },
+  { label: "Регистрация", href: "#registration" },
 ];
 
 export function Header() {
@@ -72,11 +72,11 @@ export function Header() {
           <div className="flex items-center gap-3">
             {/* CTA — always visible */}
             <a
-              href="#tickets"
+              href="#registration"
               onClick={closeMenu}
               className="inline-flex items-center border border-foreground px-4 py-1.5 text-xs font-medium text-foreground transition-colors duration-200 hover:bg-foreground hover:text-background md:px-5 md:py-2 md:text-sm"
             >
-              Купить билет
+              Регистрация
             </a>
 
             {/* Hamburger — mobile only */}

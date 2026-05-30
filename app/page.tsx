@@ -4,7 +4,7 @@ import { Hero } from "@/components/forum/Hero";
 import { About } from "@/components/forum/About";
 import { Speakers } from "@/components/forum/Speakers";
 import { Schedule } from "@/components/forum/Schedule";
-import { Tickets } from "@/components/forum/Tickets";
+import { Registration } from "@/components/forum/Registration";
 import { Footer } from "@/components/forum/Footer";
 
 export default function ForumLanding() {
@@ -18,7 +18,7 @@ export default function ForumLanding() {
         <About />
         <Speakers />
         <Schedule />
-        <Tickets />
+        <Registration />
       </main>
 
       <Footer />

@@ -35,6 +35,18 @@ model Subscriber {
   @@map("subscribers")
 }
 
+/// Event registration (name + email + phone)
+model Registration {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@map("registrations")
+}
+
 /// Forum speaker
 model Speaker {
   id       String    @id @default(cuid())

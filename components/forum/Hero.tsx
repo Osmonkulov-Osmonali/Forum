@@ -93,7 +93,7 @@ export function Hero() {
         {/* CTA */}
         <motion.div variants={item}>
           <a
-            href="#tickets"
+            href="#registration"
             className="
               group inline-flex w-full items-center justify-center gap-2
               bg-[#8ECAE6] px-8 py-3.5
@@ -104,7 +104,7 @@ export function Hero() {
               sm:w-auto sm:px-10 sm:py-4 sm:text-base
             "
           >
-            Купить билет
+            Зарегистрироваться
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="size-4 translate-x-0 transition-transform duration-300 group-hover:translate-x-1"
