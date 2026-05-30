@@ -60,7 +60,7 @@ const team: Member[] = [
 
 export function Team() {
   return (
-    <section className="bg-background-secondary px-6 py-28 lg:py-36">
+    <section className="bg-background-secondary px-4 py-12 md:px-8 md:py-24 lg:py-36">
       <div className="mx-auto max-w-6xl">
 
         {/* Header */}
@@ -69,7 +69,7 @@ export function Team() {
             <span className="mb-5 block font-sans text-sm font-medium uppercase tracking-[0.2em] text-accent-primary">
               Команда
             </span>
-            <h2 className="max-w-xs font-sans text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+            <h2 className="max-w-xs font-sans text-2xl font-semibold tracking-tight text-foreground sm:text-3xl lg:text-5xl">
               Кто делает форум
             </h2>
           </div>
@@ -80,7 +80,7 @@ export function Team() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 gap-px bg-[#E2E8F0] sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-px bg-[#E2E8F0] sm:grid-cols-2 lg:grid-cols-4">
           {team.map((member) => (
             <div
               key={member.id}

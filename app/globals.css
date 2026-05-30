@@ -126,7 +126,10 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-x-hidden;
+  }
+  html {
+    overflow-x: hidden;
   }
   h1,
   h2,
@@ -148,5 +151,13 @@
     animation: marquee 32s linear infinite;
     will-change: transform;
     min-width: max-content;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }

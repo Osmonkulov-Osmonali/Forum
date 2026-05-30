@@ -30,7 +30,7 @@ const META = [
 
 export function Hero() {
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-6 pt-16">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 pt-14 md:px-6 md:pt-16">
       {/* ── Background glow blobs ── */}
       <div
         aria-hidden
@@ -62,7 +62,7 @@ export function Hero() {
         {/* Main heading */}
         <motion.h1
           variants={item}
-          className="mb-6 font-heading text-[clamp(3.5rem,12vw,8rem)] font-semibold leading-none tracking-tight text-foreground-dark"
+          className="mb-5 font-heading text-[clamp(2.8rem,12vw,8rem)] font-semibold leading-none tracking-tight text-foreground-dark md:mb-6"
         >
           FORUM
           <span className="block text-[#8ECAE6]">2026</span>
@@ -71,7 +71,7 @@ export function Hero() {
         {/* Subheading — strong offer */}
         <motion.p
           variants={item}
-          className="mx-auto mb-10 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl lg:text-2xl"
+          className="mx-auto mb-8 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg md:mb-10 lg:text-2xl"
         >
           Один день, который изменит вектор вашего бизнеса.
           <br className="hidden sm:block" />
@@ -101,12 +101,13 @@ export function Hero() {
           <a
             href="#tickets"
             className="
-              group inline-flex items-center gap-2
-              bg-[#8ECAE6] px-10 py-4
-              text-base font-semibold text-[#1E293B]
+              group inline-flex w-full items-center justify-center gap-2
+              bg-[#8ECAE6] px-8 py-3.5
+              text-sm font-semibold text-[#1E293B]
               transition-all duration-300
               hover:bg-[#1E293B] hover:text-[#8ECAE6]
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ECAE6]
+              sm:w-auto sm:px-10 sm:py-4 sm:text-base
             "
           >
             Купить билет

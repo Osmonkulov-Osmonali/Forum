@@ -93,13 +93,13 @@ const tiers: Tier[] = [
 
 export function Tickets() {
   return (
-    <section id="tickets" className="bg-background px-6 py-28 lg:py-36">
+    <section id="tickets" className="bg-background px-4 py-12 md:px-8 md:py-24 lg:py-36">
       <div className="mx-auto max-w-6xl">
         <div className="mb-14 lg:mb-18">
           <span className="mb-5 block font-sans text-sm font-medium uppercase tracking-[0.2em] text-accent-primary">
             Билеты
           </span>
-          <h2 className="mb-3 max-w-xl font-sans text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+          <h2 className="mb-3 max-w-xl font-sans text-2xl font-semibold tracking-tight text-foreground sm:text-3xl lg:text-5xl">
             Выберите тариф
           </h2>
           <p className="font-sans text-base text-muted-foreground">
@@ -107,7 +107,7 @@ export function Tickets() {
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3 sm:gap-5 lg:gap-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5 lg:gap-6">
           {tiers.map((tier) => (
             <div
               key={tier.id}
@@ -125,7 +125,7 @@ export function Tickets() {
                 </div>
               )}
 
-              <div className="flex flex-1 flex-col p-7 lg:p-8">
+              <div className="flex flex-1 flex-col p-5 md:p-7 lg:p-8">
                 {/* Шапка */}
                 <div className="mb-6 border-b border-[#E2E8F0] pb-6">
                   <p className="mb-4 font-sans text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">

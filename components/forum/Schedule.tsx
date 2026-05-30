@@ -246,14 +246,14 @@ function SessionRow({
         type="button"
         onClick={onToggle}
         className={cn(
-          "group flex w-full items-start gap-4 px-6 py-5 text-left transition-colors duration-150 sm:gap-6",
+          "group flex w-full items-start gap-3 px-4 py-4 text-left transition-colors duration-150 sm:gap-6 sm:px-6 sm:py-5",
           isBreak
             ? "cursor-default hover:bg-transparent"
             : "hover:bg-background-secondary"
         )}
         disabled={isBreak}
       >
-        <span className="w-28 shrink-0 pt-0.5 font-sans text-xs tabular-nums text-muted-foreground sm:text-sm">
+        <span className="w-20 shrink-0 pt-0.5 font-sans text-xs tabular-nums text-muted-foreground sm:w-28 sm:text-sm">
           {session.time}
         </span>
 
@@ -309,7 +309,7 @@ function SessionRow({
             transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className="border-t border-[#E2E8F0] px-6 pb-6 pt-4 pl-[calc(1.5rem+7rem+1.5rem)] sm:pl-[calc(1.5rem+7rem+1.5rem)]">
+            <div className="border-t border-[#E2E8F0] px-4 pb-5 pt-4 pl-[calc(1rem+5rem+0.75rem)] sm:px-6 sm:pl-[calc(1.5rem+7rem+1.5rem)]">
               <p className="font-sans text-sm leading-relaxed text-muted-foreground">
                 {session.description}
               </p>
@@ -338,13 +338,13 @@ export function Schedule() {
   }
 
   return (
-    <section id="schedule" className="bg-background-secondary px-6 py-28 lg:py-36">
+    <section id="schedule" className="bg-background-secondary px-4 py-12 md:px-8 md:py-24 lg:py-36">
       <div className="mx-auto max-w-4xl">
         <div className="mb-12">
           <span className="mb-5 block font-sans text-sm font-medium uppercase tracking-[0.2em] text-accent-primary">
             Программа
           </span>
-          <h2 className="mb-2 font-sans text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+          <h2 className="mb-2 font-sans text-2xl font-semibold tracking-tight text-foreground sm:text-3xl lg:text-5xl">
             Расписание форума
           </h2>
           <p className="font-sans text-base text-muted-foreground">
@@ -353,7 +353,7 @@ export function Schedule() {
         </div>
 
         {/* Табы */}
-        <div className="relative mb-8 flex gap-0 border-b border-[#E2E8F0]">
+        <div className="relative mb-8 flex gap-0 overflow-x-auto border-b border-[#E2E8F0] scrollbar-hide">
           {HALLS.map((hall) => (
             <button
               key={hall.id}

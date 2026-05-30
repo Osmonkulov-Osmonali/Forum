@@ -153,18 +153,18 @@ export function Speakers() {
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
 
   return (
-    <section id="speakers" className="bg-background px-6 py-28 lg:py-36">
+    <section id="speakers" className="bg-background px-4 py-12 md:px-8 md:py-24 lg:py-36">
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 lg:mb-16">
           <span className="mb-4 block text-sm font-medium uppercase tracking-wider text-accent-primary">
             Спикеры
           </span>
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl lg:text-5xl">
             16 экспертов форума
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-px bg-border sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-px bg-border sm:grid-cols-2 lg:grid-cols-4">
           {speakers.map((speaker) => (
             <button
               key={speaker.id}

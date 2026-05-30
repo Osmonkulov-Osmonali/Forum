@@ -79,7 +79,7 @@ export function Partners() {
   const doubled = [...partners, ...partners];
 
   return (
-    <section className="overflow-hidden border-y border-[#E2E8F0] bg-background py-16">
+    <section className="overflow-hidden border-y border-[#E2E8F0] bg-background py-10 md:py-16">
       <div className="mx-auto mb-10 max-w-6xl px-6">
         <span className="block font-sans text-sm font-medium uppercase tracking-[0.2em] text-accent-primary">
           Партнёры и спонсоры

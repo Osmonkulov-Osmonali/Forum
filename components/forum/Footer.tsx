@@ -94,11 +94,11 @@ export function Footer() {
     <footer className="bg-background-secondary">
 
       {/* ── Top: newsletter ──────────────────────────────────── */}
-      <div className="border-b border-[#E2E8F0] px-6 py-16 lg:py-20">
-        <div className="mx-auto max-w-6xl flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
+      <div className="border-b border-[#E2E8F0] px-4 py-10 md:px-6 md:py-16 lg:py-20">
+        <div className="mx-auto max-w-6xl flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
 
           <div className="max-w-sm">
-            <h3 className="mb-2 font-sans text-xl font-semibold tracking-tight text-[#1E293B] sm:text-2xl">
+            <h3 className="mb-2 font-sans text-lg font-semibold tracking-tight text-[#1E293B] sm:text-2xl">
               Оставайтесь в курсе
             </h3>
             <p className="font-sans text-sm leading-relaxed text-muted-foreground">
@@ -176,10 +176,10 @@ export function Footer() {
       </div>
 
       {/* ── Bottom: nav + legal ──────────────────────────────── */}
-      <div className="px-6 py-10 lg:py-12">
+      <div className="px-4 py-8 md:px-6 md:py-10 lg:py-12">
         <div className="mx-auto max-w-6xl">
 
-          <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 
             {/* Brand */}
             <div>
