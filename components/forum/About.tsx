@@ -38,9 +38,10 @@ function Counter({ value, suffix = "" }: CounterProps) {
 }
 
 const stats = [
-  { value: 1000, suffix: "+", label: "участников" },
-  { value: 16, suffix: "+", label: "спикеров" },
-  { value: 10, suffix: "", label: "часов нетворкинга" },
+  { value: 500, suffix: "+", label: "участников offline" },
+  { value: 500, suffix: "+", label: "зрителей онлайн" },
+  { value: 12,  suffix: "",  label: "спикеров" },
+  { value: 7,   suffix: "",  label: "часов контента" },
 ];
 
 export function About() {
@@ -61,53 +62,54 @@ export function About() {
           className="mb-10 md:mb-20 lg:mb-28"
         >
           <span className="mb-5 block text-sm font-medium uppercase tracking-[0.2em] text-accent-primary">
-            О форуме
+            О событии
           </span>
           <h2 className="mb-8 max-w-3xl text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-3xl md:mb-16 lg:text-5xl">
-            Пространство для тех, кто строит будущее
+            Один день, который открывает двери в лучшие университеты мира
           </h2>
 
           <div className="grid gap-8 md:gap-16 lg:grid-cols-2 lg:gap-24">
             <article className="space-y-5">
               <h3 className="text-xl font-semibold text-foreground lg:text-2xl">
-                Миссия
+                Для кого
               </h3>
               <div className="h-px w-12 bg-accent-secondary" />
-              <p className="text-lg leading-relaxed text-muted-foreground">
-                FORUM 2026 создаёт среду, где бизнес и технологии встречаются
-                на равных. Мы объединяем людей, которые не просто следят за
-                трендами, а формируют их — через открытый диалог, обмен опытом
-                и совместные проекты.
+              <p className="text-base leading-relaxed text-muted-foreground lg:text-lg">
+                Future Leaders Day — масштабное событие для <strong className="text-foreground font-medium">школьников
+                и студентов 11–19 лет</strong> и их родителей. Мы собираем тех,
+                кто уже думает о своём будущем и хочет поступить в топовые
+                университеты мира: MIT, Oxford, ETH Zurich, NUS и другие.
               </p>
             </article>
 
             <article className="space-y-5">
               <h3 className="text-xl font-semibold text-foreground lg:text-2xl">
-                Для кого
+                Что внутри
               </h3>
               <div className="h-px w-12 bg-accent-secondary" />
-              <p className="text-lg leading-relaxed text-muted-foreground">
-                Форум для предпринимателей, руководителей продуктов, инженеров,
-                инвесторов и всех, кто хочет расти вместе с индустрией. Если
-                вам важны новые связи, практические инсайты и вдохновение —
-                вы по адресу.
+              <p className="text-base leading-relaxed text-muted-foreground lg:text-lg">
+                12 спикеров — студенты и выпускники ведущих университетов
+                планеты — поделятся личным опытом поступления, жизни за рубежом
+                и построения карьеры. Практические воркшопы, разбор эссе,
+                нетворкинг и Zoom-трансляция для участников из KG, KZ и UZ.
               </p>
             </article>
           </div>
         </motion.div>
 
+        {/* Stats */}
         <motion.div
           initial={{ opacity: 0, y: 32 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
-          className="grid grid-cols-3 gap-4 border-t border-border pt-8 md:gap-12 md:pt-16 lg:gap-16 lg:pt-20"
+          className="grid grid-cols-2 gap-6 border-t border-border pt-8 sm:grid-cols-4 md:gap-12 md:pt-16 lg:gap-16 lg:pt-20"
         >
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="mb-3 text-4xl font-semibold tracking-tight text-foreground md:text-5xl lg:text-6xl">
+              <div className="mb-2 text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-6xl">
                 <Counter value={stat.value} suffix={stat.suffix} />
               </div>
-              <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground sm:text-sm">
                 {stat.label}
               </p>
             </div>

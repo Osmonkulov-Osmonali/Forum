@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { CalendarDays, MapPin, Users } from "lucide-react";
+import { MapPin, Clock, Monitor } from "lucide-react";
 
 const container: Variants = {
   hidden: {},
@@ -23,24 +23,18 @@ const item: Variants = {
 };
 
 const META = [
-  { icon: CalendarDays, text: "15–16 октября 2026" },
-  { icon: MapPin, text: "Бишкек, Технопарк" },
-  { icon: Users, text: "1 000+ участников" },
+  { icon: MapPin,    text: "Technopark, Bishkek" },
+  { icon: Clock,     text: "12:00 – 19:00" },
+  { icon: Monitor,   text: "Offline & Zoom Stream" },
 ];
 
 export function Hero() {
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 pt-14 md:px-6 md:pt-16">
       {/* ── Background glow blobs ── */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-      >
-        {/* top-left large soft blob */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -left-32 -top-32 h-[520px] w-[520px] rounded-full bg-[#8ECAE6]/25 blur-[120px]" />
-        {/* center-right mid blob */}
         <div className="absolute right-0 top-1/3 h-[380px] w-[380px] -translate-y-1/2 rounded-full bg-[#A2D2FF]/20 blur-[100px]" />
-        {/* bottom-center small accent */}
         <div className="absolute bottom-0 left-1/2 h-[260px] w-[480px] -translate-x-1/2 rounded-full bg-[#8ECAE6]/15 blur-[80px]" />
       </div>
 
@@ -54,28 +48,28 @@ export function Hero() {
         {/* Eyebrow */}
         <motion.p
           variants={item}
-          className="mb-5 text-sm font-medium uppercase tracking-[0.22em] text-muted-foreground"
+          className="mb-4 text-sm font-medium uppercase tracking-[0.22em] text-muted-foreground"
         >
-          Масштабный форум года
+          Lead+ Youth Academy · powered by Logos.kg
         </motion.p>
 
         {/* Main heading */}
         <motion.h1
           variants={item}
-          className="mb-5 font-heading text-[clamp(2.8rem,12vw,8rem)] font-semibold leading-none tracking-tight text-foreground-dark md:mb-6"
+          className="mb-5 font-heading text-[clamp(2.6rem,11vw,7.5rem)] font-semibold leading-[1.02] tracking-tight text-foreground-dark md:mb-6"
         >
-          FORUM
-          <span className="block text-[#8ECAE6]">2026</span>
+          Future
+          <span className="block text-[#8ECAE6]">Leaders Day</span>
         </motion.h1>
 
-        {/* Subheading — strong offer */}
+        {/* Subheading */}
         <motion.p
           variants={item}
-          className="mx-auto mb-8 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg md:mb-10 lg:text-2xl"
+          className="mx-auto mb-8 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg md:mb-10 lg:text-xl"
         >
-          Один день, который изменит вектор вашего бизнеса.
+          Масштабное событие для школьников, студентов и родителей —
           <br className="hidden sm:block" />
-          16 практикующих спикеров, живые кейсы и нетворкинг без воды.
+          всё о поступлении в топовые университеты мира.
         </motion.p>
 
         {/* Meta badges */}

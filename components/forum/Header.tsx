@@ -6,10 +6,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
-  { label: "О форуме", href: "#about" },
-  { label: "Программа", href: "#schedule" },
+  { label: "О событии", href: "#about" },
   { label: "Спикеры", href: "#speakers" },
-  { label: "Тарифы", href: "#tickets" },
+  { label: "Программа", href: "#schedule" },
+  { label: "Билеты", href: "#tickets" },
 ];
 
 export function Header() {

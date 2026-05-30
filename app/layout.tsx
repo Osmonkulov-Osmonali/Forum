@@ -12,8 +12,8 @@ const inter = Inter({
 const geistSans = GeistSans
 
 export const metadata: Metadata = {
-  title: 'FORUM 2026 — Масштабный форум года',
-  description: 'Крупнейший форум для лидеров индустрии. 1000+ участников, 16+ спикеров.',
+  title: 'Future Leaders Day — Lead+ Youth Academy',
+  description: 'Масштабное событие для школьников и студентов 11–19 лет о поступлении в топовые университеты мира. Technopark, Bishkek. Offline & Zoom Stream.',
   generator: 'v0.app',
   icons: {
     icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
