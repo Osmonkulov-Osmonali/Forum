@@ -75,7 +75,7 @@ export function About() {
               </h3>
               <div className="h-px w-12 bg-accent-secondary" />
               <p className="text-base leading-relaxed text-muted-foreground lg:text-lg">
-                Future Leaders Day — масштабное событие для <strong className="text-foreground font-medium">школьников
+                Grant Circle Central Asia — масштабное событие для <strong className="text-foreground font-medium">школьников
                 и студентов 11–19 лет</strong> и их родителей. Мы собираем тех,
                 кто уже думает о своём будущем и хочет поступить в топовые
                 университеты мира: MIT, Oxford, ETH Zurich, NUS и другие.

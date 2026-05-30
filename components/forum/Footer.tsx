@@ -184,10 +184,10 @@ export function Footer() {
             {/* Brand */}
             <div>
               <p className="font-sans text-base font-semibold tracking-tight text-[#1E293B]">
-                FORUM 2026
+                Grant Circle Central Asia
               </p>
               <p className="mt-1 font-sans text-xs text-muted-foreground">
-                15–16 октября · Бишкек
+                2026 · Бишкек
               </p>
             </div>
 
@@ -223,7 +223,7 @@ export function Footer() {
           {/* Copyright + legal */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="font-sans text-xs text-muted-foreground">
-              © {new Date().getFullYear()} FORUM 2026. Все права защищены.
+              © {new Date().getFullYear()} Grant Circle Central Asia. Все права защищены.
             </p>
             <nav aria-label="Правовые документы">
               <ul className="flex flex-wrap gap-x-6 gap-y-2">

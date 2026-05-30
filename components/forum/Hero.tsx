@@ -58,8 +58,8 @@ export function Hero() {
           variants={item}
           className="mb-5 font-heading text-[clamp(2.6rem,11vw,7.5rem)] font-semibold leading-[1.02] tracking-tight text-foreground-dark md:mb-6"
         >
-          Future
-          <span className="block text-[#8ECAE6]">Leaders Day</span>
+          Grant Circle
+          <span className="block text-[#8ECAE6]">Central Asia</span>
         </motion.h1>
 
         {/* Subheading */}

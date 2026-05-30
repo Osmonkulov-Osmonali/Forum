@@ -52,7 +52,7 @@ export function Header() {
             onClick={closeMenu}
             className="font-heading text-base font-semibold tracking-tight text-foreground-dark select-none md:text-lg"
           >
-            FORUM 2026
+            Grant Circle Central Asia
           </a>
 
           {/* Desktop nav */}

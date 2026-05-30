@@ -12,7 +12,7 @@ const inter = Inter({
 const geistSans = GeistSans
 
 export const metadata: Metadata = {
-  title: 'Future Leaders Day — Lead+ Youth Academy',
+  title: 'Grant Circle Central Asia — Lead+ Youth Academy',
   description: 'Масштабное событие для школьников и студентов 11–19 лет о поступлении в топовые университеты мира. Technopark, Bishkek. Offline & Zoom Stream.',
   generator: 'v0.app',
   icons: {

@@ -5,6 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+type SubItem = {
+  time: string;
+  label: string;
+  isQA?: boolean;
+};
+
 type Session = {
   id: string;
   time: string;
@@ -12,221 +18,160 @@ type Session = {
   speaker: string;
   speakerRole: string;
   description: string;
-  type: "talk" | "break" | "workshop";
+  subItems?: SubItem[];
+  type: "talk" | "break" | "workshop" | "entertainment" | "staff";
 };
 
-const hall1: Session[] = [
+const sessions: Session[] = [
   {
-    id: "h1-1",
-    time: "09:00 – 09:45",
-    title: "Открытие. Форум как точка сборки индустрии",
-    speaker: "Александр Петров",
-    speakerRole: "CEO, TechVision",
-    description:
-      "Вступительное слово организаторов и ключевых партнёров. Обзор повестки форума, главные темы двух дней. Почему именно сейчас важно собираться вместе — взгляд на состояние рынка и вызовы, которые объединяют всех участников.",
-    type: "talk",
-  },
-  {
-    id: "h1-2",
-    time: "10:00 – 10:50",
-    title: "Будущее AI в бизнесе: от пилотов к системным изменениям",
-    speaker: "Александр Петров",
-    speakerRole: "CEO, TechVision",
-    description:
-      "Как компании переходят от экспериментов с ИИ к реальному внедрению в ключевые процессы. Разбор кейсов из производства, финансов и логистики. Что мешает масштабированию и как преодолеть организационные барьеры.",
-    type: "talk",
-  },
-  {
-    id: "h1-3",
-    time: "11:00 – 11:15",
-    title: "Кофе-пауза",
-    speaker: "",
-    speakerRole: "",
-    description: "Нетворкинг в фойе, демо-зона партнёров.",
-    type: "break",
-  },
-  {
-    id: "h1-4",
-    time: "11:15 – 12:00",
-    title: "Data-driven культура: как решения перестают быть интуитивными",
-    speaker: "Елена Козлова",
-    speakerRole: "VP Engineering, DataFlow",
-    description:
-      "Переход от управления по ощущениям к управлению по данным — это прежде всего культурный сдвиг. Как выстраивать аналитическую инфраструктуру, формировать навыки команды и создавать среду, где данные действительно влияют на решения.",
-    type: "talk",
-  },
-  {
-    id: "h1-5",
-    time: "12:15 – 13:00",
-    title: "Кибербезопасность как конкурентное преимущество",
-    speaker: "Сергей Морозов",
-    speakerRole: "Директор, CyberShield",
-    description:
-      "Безопасность перестала быть просто статьёй затрат — компании, которые делают её частью ценностного предложения, получают доверие клиентов и доступ к enterprise-сегменту. Как выстроить зрелую программу безопасности без избыточных издержек.",
-    type: "talk",
-  },
-  {
-    id: "h1-6",
-    time: "13:00 – 14:00",
-    title: "Обед",
-    speaker: "",
-    speakerRole: "",
-    description: "Обеденный перерыв. Неформальные встречи с партнёрами.",
-    type: "break",
-  },
-  {
-    id: "h1-7",
-    time: "14:00 – 14:50",
-    title: "Продуктовая стратегия в условиях неопределённости",
-    speaker: "Анна Смирнова",
-    speakerRole: "Head of Product, FinTech Pro",
-    description:
-      "Как строить продуктовые roadmap, когда рынок меняется быстрее планов. Принципы гибкой стратегии, инструменты prioritization и подходы к discovery, которые работают в реальных условиях, а не только в учебниках.",
-    type: "talk",
-  },
-  {
-    id: "h1-8",
-    time: "15:00 – 15:50",
-    title: "Инвестиции в deep tech: почему сейчас и куда смотреть",
-    speaker: "Павел Кузнецов",
-    speakerRole: "Partner, Venture Capital",
-    description:
-      "Обзор инвестиционного климата в AI, biotech и climate tech. Где формируются следующие крупные компании и какие сигналы ищут фонды на ранних стадиях. Практические советы для стартапов, готовящихся к привлечению финансирования.",
-    type: "talk",
-  },
-  {
-    id: "h1-9",
-    time: "16:00 – 16:50",
-    title: "Панельная дискуссия: технологии и человек",
-    speaker: "Несколько спикеров",
-    speakerRole: "Модерация: Мария Иванова",
-    description:
-      "Открытая дискуссия о том, как автоматизация меняет рынок труда, что значит быть специалистом в эпоху LLM-ассистентов, и как компаниям готовить команды к трансформациям. Вопросы из зала приветствуются.",
-    type: "talk",
-  },
-  {
-    id: "h1-10",
-    time: "17:00 – 18:00",
-    title: "Нетворкинг-сессия. Закрытие первого дня",
+    id: "s-1",
+    time: "09:00–11:00",
+    title: "Подготовка площадки",
     speaker: "",
     speakerRole: "",
     description:
-      "Коктейльный нетворкинг. Живая музыка, демо-зона, неформальное общение с командами спикеров.",
-    type: "break",
+      "Команда организаторов прибывает и разворачивает площадку: мебель, декор, брендинг, регистрационные стойки. Техническая проверка звука, AV-оборудования и слайдов со спикерами.",
+    type: "staff",
   },
-];
-
-const hall2: Session[] = [
   {
-    id: "h2-1",
-    time: "09:00 – 09:30",
-    title: "Регистрация участников",
+    id: "s-2",
+    time: "11:00–12:00",
+    title: "Конкурс эссе",
     speaker: "",
     speakerRole: "",
-    description: "Выдача бейджей, Welcome-пакеты, ознакомление с площадкой.",
-    type: "break",
-  },
-  {
-    id: "h2-2",
-    time: "10:00 – 10:50",
-    title: "Воркшоп: Дизайн-система за один день",
-    speaker: "Артём Лебедев",
-    speakerRole: "Lead Designer, Studio X",
     description:
-      "Практическая сессия: как с нуля выстроить базовую дизайн-систему для продуктовой команды. Участники разберут структуру токенов, принципы компонентной библиотеки и процесс её поддержки. Нужен ноутбук с Figma.",
-    type: "workshop",
+      "Конкурс «Самые креативные истории». За день до форума публикуются анонсы конкурса — участник с наиболее креативными историями получает призы от спонсоров мероприятия.",
+    type: "entertainment",
   },
   {
-    id: "h2-3",
-    time: "11:15 – 12:00",
-    title: "EdTech: как учиться быстрее в эпоху информационного шума",
-    speaker: "Максим Громов",
-    speakerRole: "Founder, EduTech",
-    description:
-      "Новые модели корпоративного обучения, microlearning и роль AI-тьюторов. Как компании внедряют культуру непрерывного развития и измеряют её влияние на бизнес-результат.",
-    type: "talk",
-  },
-  {
-    id: "h2-4",
-    time: "12:15 – 13:00",
-    title: "ESG без воды: как встроить устойчивость в P&L",
-    speaker: "Кирилл Захаров",
-    speakerRole: "Director, GreenEnergy",
-    description:
-      "Практический взгляд на ESG-трансформацию: от декларативных отчётов к реальным метрикам. Кейсы компаний, которые сделали устойчивость источником роста, а не обременением.",
-    type: "talk",
-  },
-  {
-    id: "h2-5",
-    time: "13:00 – 14:00",
-    title: "Обед",
+    id: "s-3",
+    time: "11:50–12:40",
+    title: "Регистрация",
     speaker: "",
     speakerRole: "",
-    description: "Обеденный перерыв. Неформальные встречи с партнёрами.",
+    description:
+      "Участники проходят регистрацию, получают билеты и фотографируются в фотозоне. Волонтёры встречают гостей и выдают welcome-материалы.",
     type: "break",
   },
   {
-    id: "h2-6",
-    time: "14:00 – 14:50",
-    title: "Воркшоп: Операционные метрики, которые реально работают",
-    speaker: "Виктория Орлова",
-    speakerRole: "COO, LogiChain",
-    description:
-      "Практическая сессия по построению операционного дашборда. Как выбрать 5–7 ключевых метрик для вашего типа бизнеса, как сделать их понятными для всей команды и как связать с финансовыми результатами.",
-    type: "workshop",
-  },
-  {
-    id: "h2-7",
-    time: "15:00 – 15:50",
-    title: "B2B-продажи в 2026: что изменилось и что работает",
-    speaker: "Юлия Романова",
-    speakerRole: "Head of Sales, SaaS Global",
-    description:
-      "Современный enterprise-покупатель изменился — он больше исследует самостоятельно, позже выходит на диалог и требует большей ценности от каждого касания. Как адаптировать продажи, выстраивать доверие и сокращать цикл сделки.",
-    type: "talk",
-  },
-  {
-    id: "h2-8",
-    time: "16:00 – 16:50",
-    title: "Культура как продукт: как HR становится стратегическим активом",
-    speaker: "Татьяна Белова",
-    speakerRole: "HR Director, PeopleFirst",
-    description:
-      "Как выстраивать корпоративную культуру осознанно: от формулировки ценностей до их встраивания в процессы найма, онбординга и оценки. Практические инструменты для команд от 50 до 5000 человек.",
-    type: "talk",
-  },
-  {
-    id: "h2-9",
-    time: "17:00 – 17:50",
-    title: "Маркетинг через сообщество: от аудитории к комьюнити",
-    speaker: "Ольга Новикова",
-    speakerRole: "CMO, BrandLab",
-    description:
-      "Бренды, которые строят живые сообщества, получают не просто лояльность — они получают армию амбассадоров. Как запустить и удержать комьюнити, монетизировать его без потери доверия и масштабировать.",
-    type: "talk",
-  },
-  {
-    id: "h2-10",
-    time: "18:00 – 18:30",
-    title: "Итоговая Q&A-сессия",
-    speaker: "Все спикеры зала 2",
+    id: "s-4",
+    time: "12:40–12:50",
+    title: "Открытие программы",
+    speaker: "",
     speakerRole: "",
     description:
-      "Открытый диалог: вопросы участников всем спикерам зала. Лучшие вопросы — в прямой эфир.",
+      "Официальное открытие Grant Circle Central Asia. Ведущий приветствует участников, представляет спикеров и объявляет программу дня.",
+    type: "talk",
+  },
+  {
+    id: "s-5",
+    time: "12:50–14:00",
+    title: "БЛОК 1 — Внеклассные активности",
+    speaker: "",
+    speakerRole: "",
+    description:
+      "Конкурс «Принеси мне»: выбираем 10 волонтёров (5 девушек и 5 ребят) — они должны принести предмет, который называет спикер. Победитель получает подарок. Реклама Future Leaders Academy.",
+    subItems: [
+      { time: "12:50–13:25", label: "Спикер / Панельная дискуссия — Внеклассные активности" },
+      { time: "13:25–14:00", label: "Спикер / Панельная дискуссия — Летние программы" },
+    ],
+    type: "talk",
+  },
+  {
+    id: "s-6",
+    time: "14:10–15:20",
+    title: "БЛОК 2 — Университеты (часть 1)",
+    speaker: "Amirtay Beksultanov · Adiz Duyshekeev",
+    speakerRole: "Спикеры форума",
+    description: "",
+    subItems: [
+      { time: "14:10–14:45", label: "Amirtay Beksultanov — Выступление + Q&A" },
+      { time: "14:45–15:20", label: "Adiz Duyshekeev — Выступление + Q&A" },
+    ],
+    type: "talk",
+  },
+  {
+    id: "s-7",
+    time: "15:20–16:30",
+    title: "Перерыв",
+    speaker: "",
+    speakerRole: "",
+    description:
+      "Платные консультации и обед со спикерами. Участники могут лично пообщаться с выступающими в неформальной обстановке.",
+    type: "break",
+  },
+  {
+    id: "s-8",
+    time: "16:30–17:40",
+    title: "БЛОК 2 — Университеты (часть 2)",
+    speaker: "Спикер по Европе · Akbarova Kamila",
+    speakerRole: "Спикеры форума",
+    description: "",
+    subItems: [
+      { time: "16:30–17:05", label: "Спикер по Европе — Выступление + Q&A" },
+      { time: "17:05–17:40", label: "Akbarova Kamila — Выступление + Q&A" },
+    ],
+    type: "talk",
+  },
+  {
+    id: "s-9",
+    time: "17:40–18:40",
+    title: "БЛОК 3 — Экзамены (IELTS, SAT и др.)",
+    speaker: "Kanatbekov Adil · Arazberdiev Artur",
+    speakerRole: "Спикеры форума",
+    description: "",
+    subItems: [
+      { time: "17:40–18:10", label: "Kanatbekov Adil — Выступление + Q&A" },
+      { time: "18:10–18:40", label: "Arazberdiev Artur — Выступление + Q&A" },
+    ],
+    type: "talk",
+  },
+  {
+    id: "s-10",
+    time: "18:40–18:50",
+    title: "Конкурс Kahoot",
+    speaker: "",
+    speakerRole: "",
+    description:
+      "Викторина Kahoot по всей программе форума: 8 минут на игру + 2 минуты на награждение победителей (1-е, 2-е и 3-е место).",
+    type: "entertainment",
+  },
+  {
+    id: "s-11",
+    time: "18:50–18:55",
+    title: "Реклама Future Leaders Academy",
+    speaker: "",
+    speakerRole: "",
+    description:
+      "Анонс будущих программ и мероприятий Future Leaders Academy для всех участников.",
+    type: "staff",
+  },
+  {
+    id: "s-12",
+    time: "18:55–19:00",
+    title: "Закрытие программы",
+    speaker: "",
+    speakerRole: "",
+    description:
+      "Заключительное слово организаторов. Благодарность спикерам, спонсорам и участникам. Официальное завершение Grant Circle Central Asia.",
     type: "talk",
   },
 ];
 
 const TYPE_STYLES: Record<Session["type"], string> = {
-  talk: "bg-accent-secondary/20 text-accent-primary",
-  workshop: "bg-accent-primary/20 text-accent-primary",
-  break: "bg-muted text-muted-foreground",
+  talk:          "bg-accent-secondary/20 text-accent-primary",
+  workshop:      "bg-accent-primary/20 text-accent-primary",
+  break:         "bg-muted text-muted-foreground",
+  entertainment: "bg-[#FEF3C7] text-[#92400E]",
+  staff:         "bg-[#F1F5F9] text-[#64748B]",
 };
 
 const TYPE_LABELS: Record<Session["type"], string> = {
-  talk: "Доклад",
-  workshop: "Воркшоп",
-  break: "Перерыв",
+  talk:          "Блок",
+  workshop:      "Воркшоп",
+  break:         "Перерыв",
+  entertainment: "Активность",
+  staff:         "Орг",
 };
 
 function SessionRow({
@@ -238,25 +183,27 @@ function SessionRow({
   isOpen: boolean;
   onToggle: () => void;
 }) {
-  const isBreak = session.type === "break";
+  const hasContent =
+    !!session.description || (session.subItems && session.subItems.length > 0);
+  const isDimmed = session.type === "staff";
 
   return (
     <div className="border-b border-[#E2E8F0] last:border-b-0">
       <button
         type="button"
-        onClick={onToggle}
+        onClick={hasContent ? onToggle : undefined}
         className={cn(
           "group flex w-full items-start gap-3 px-4 py-4 text-left transition-colors duration-150 sm:gap-6 sm:px-6 sm:py-5",
-          isBreak
-            ? "cursor-default hover:bg-transparent"
-            : "hover:bg-background-secondary"
+          hasContent ? "hover:bg-background-secondary" : "cursor-default"
         )}
-        disabled={isBreak}
+        disabled={!hasContent}
       >
-        <span className="w-20 shrink-0 pt-0.5 font-sans text-xs tabular-nums text-muted-foreground sm:w-28 sm:text-sm">
+        {/* Time */}
+        <span className="w-24 shrink-0 pt-0.5 font-sans text-xs tabular-nums text-muted-foreground sm:w-32 sm:text-sm">
           {session.time}
         </span>
 
+        {/* Content */}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <span
@@ -271,7 +218,7 @@ function SessionRow({
           <p
             className={cn(
               "mt-1.5 font-sans text-sm font-medium sm:text-base",
-              isBreak ? "text-muted-foreground" : "text-foreground"
+              isDimmed ? "text-muted-foreground" : "text-foreground"
             )}
           >
             {session.title}
@@ -281,15 +228,15 @@ function SessionRow({
               {session.speaker}
               {session.speakerRole && (
                 <span className="text-muted-foreground/60">
-                  {" "}
-                  · {session.speakerRole}
+                  {" "}· {session.speakerRole}
                 </span>
               )}
             </p>
           )}
         </div>
 
-        {!isBreak && (
+        {/* Chevron */}
+        {hasContent && (
           <ChevronDown
             className={cn(
               "mt-1 size-4 shrink-0 text-muted-foreground transition-transform duration-300",
@@ -299,8 +246,9 @@ function SessionRow({
         )}
       </button>
 
+      {/* Expanded detail */}
       <AnimatePresence initial={false}>
-        {isOpen && !isBreak && (
+        {isOpen && hasContent && (
           <motion.div
             key="content"
             initial={{ height: 0, opacity: 0 }}
@@ -309,10 +257,42 @@ function SessionRow({
             transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className="border-t border-[#E2E8F0] px-4 pb-5 pt-4 pl-[calc(1rem+5rem+0.75rem)] sm:px-6 sm:pl-[calc(1.5rem+7rem+1.5rem)]">
-              <p className="font-sans text-sm leading-relaxed text-muted-foreground">
-                {session.description}
-              </p>
+            <div className="border-t border-[#E2E8F0] px-4 pb-5 pt-4 pl-[calc(1rem+6rem+0.75rem)] sm:px-6 sm:pl-[calc(1.5rem+8rem+1.5rem)]">
+
+              {/* Sub-schedule items */}
+              {session.subItems && session.subItems.length > 0 && (
+                <ul className="mb-3 space-y-1.5">
+                  {session.subItems.map((item) => (
+                    <li
+                      key={item.time}
+                      className={cn(
+                        "flex items-baseline gap-3 font-sans text-xs sm:text-sm",
+                        item.isQA
+                          ? "text-muted-foreground/70"
+                          : "text-foreground"
+                      )}
+                    >
+                      <span className="w-24 shrink-0 tabular-nums text-muted-foreground/60 sm:w-28">
+                        {item.time}
+                      </span>
+                      <span>{item.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {/* Description text */}
+              {session.description && (
+                <p
+                  className={cn(
+                    "font-sans text-sm leading-relaxed text-muted-foreground",
+                    session.subItems && session.subItems.length > 0 &&
+                      "mt-3 border-t border-[#E2E8F0] pt-3"
+                  )}
+                >
+                  {session.description}
+                </p>
+              )}
             </div>
           </motion.div>
         )}
@@ -321,17 +301,8 @@ function SessionRow({
   );
 }
 
-const HALLS = [
-  { id: "hall1", label: "Зал 1", sessions: hall1 },
-  { id: "hall2", label: "Зал 2", sessions: hall2 },
-] as const;
-
 export function Schedule() {
-  const [activeHall, setActiveHall] = useState<"hall1" | "hall2">("hall1");
   const [openId, setOpenId] = useState<string | null>(null);
-
-  const sessions =
-    activeHall === "hall1" ? HALLS[0].sessions : HALLS[1].sessions;
 
   function toggle(id: string) {
     setOpenId((prev) => (prev === id ? null : id));
@@ -348,59 +319,21 @@ export function Schedule() {
             Расписание форума
           </h2>
           <p className="font-sans text-base text-muted-foreground">
-            15–16 октября 2026 · Бишкек, Технопарк
+            2026 · Бишкек, Технопарк
           </p>
         </div>
 
-        {/* Табы */}
-        <div className="relative mb-8 flex gap-0 overflow-x-auto border-b border-[#E2E8F0] scrollbar-hide">
-          {HALLS.map((hall) => (
-            <button
-              key={hall.id}
-              type="button"
-              onClick={() => {
-                setActiveHall(hall.id);
-                setOpenId(null);
-              }}
-              className={cn(
-                "relative px-6 py-3 font-sans text-sm font-medium transition-colors duration-150",
-                activeHall === hall.id
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {hall.label}
-              {activeHall === hall.id && (
-                <motion.div
-                  layoutId="tab-indicator"
-                  className="absolute inset-x-0 -bottom-px h-0.5 bg-accent-secondary"
-                  transition={{ duration: 0.2, ease: "easeInOut" }}
-                />
-              )}
-            </button>
+        {/* Session list */}
+        <div className="overflow-hidden border border-[#E2E8F0] bg-background">
+          {sessions.map((session) => (
+            <SessionRow
+              key={session.id}
+              session={session}
+              isOpen={openId === session.id}
+              onToggle={() => toggle(session.id)}
+            />
           ))}
         </div>
-
-        {/* Список сессий */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeHall}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="overflow-hidden border border-[#E2E8F0] bg-background"
-          >
-            {sessions.map((session) => (
-              <SessionRow
-                key={session.id}
-                session={session}
-                isOpen={openId === session.id}
-                onToggle={() => toggle(session.id)}
-              />
-            ))}
-          </motion.div>
-        </AnimatePresence>
       </div>
     </section>
   );
