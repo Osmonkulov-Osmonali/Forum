@@ -1,0 +1,66 @@
+// This is your Prisma schema file.
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────
+
+enum SubscriberStatus {
+  ACTIVE
+  UNSUBSCRIBED
+  BOUNCED
+}
+
+// ─────────────────────────────────────────
+// Models
+// ─────────────────────────────────────────
+
+/// Newsletter / waiting-list subscriber
+model Subscriber {
+  id        String           @id @default(cuid())
+  email     String           @unique
+  status    SubscriberStatus @default(ACTIVE)
+  createdAt DateTime         @default(now())
+
+  @@index([email])
+  @@index([status])
+  @@map("subscribers")
+}
+
+/// Forum speaker
+model Speaker {
+  id       String    @id @default(cuid())
+  name     String
+  role     String
+  company  String
+  bio      String    @db.Text
+  imageUrl String
+
+  sessions Session[]
+
+  @@map("speakers")
+}
+
+/// Agenda session (talk / workshop)
+model Session {
+  id        String   @id @default(cuid())
+  title     String
+  location  String
+  startTime DateTime
+  endTime   DateTime
+
+  speakerId String
+  speaker   Speaker  @relation(fields: [speakerId], references: [id], onDelete: Cascade)
+
+  @@index([speakerId])
+  @@index([startTime])
+  @@map("sessions")
+}
