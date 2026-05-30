@@ -100,10 +100,10 @@ export function About() {
           initial={{ opacity: 0, y: 32 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
-          className="grid gap-8 border-t border-border pt-10 sm:grid-cols-3 md:gap-12 md:pt-16 lg:gap-16 lg:pt-20"
+          className="grid grid-cols-3 gap-4 border-t border-border pt-8 md:gap-12 md:pt-16 lg:gap-16 lg:pt-20"
         >
           {stats.map((stat) => (
-            <div key={stat.label} className="text-center sm:text-left">
+            <div key={stat.label} className="text-center">
               <div className="mb-3 text-4xl font-semibold tracking-tight text-foreground md:text-5xl lg:text-6xl">
                 <Counter value={stat.value} suffix={stat.suffix} />
               </div>

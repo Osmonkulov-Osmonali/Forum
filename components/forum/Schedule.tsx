@@ -340,7 +340,7 @@ export function Schedule() {
   return (
     <section id="schedule" className="bg-background-secondary px-4 py-12 md:px-8 md:py-24 lg:py-36">
       <div className="mx-auto max-w-4xl">
-        <div className="mb-12">
+        <div className="mb-8 md:mb-12">
           <span className="mb-5 block font-sans text-sm font-medium uppercase tracking-[0.2em] text-accent-primary">
             Программа
           </span>

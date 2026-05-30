@@ -95,7 +95,7 @@ export function Tickets() {
   return (
     <section id="tickets" className="bg-background px-4 py-12 md:px-8 md:py-24 lg:py-36">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-14 lg:mb-18">
+        <div className="mb-8 md:mb-14 lg:mb-18">
           <span className="mb-5 block font-sans text-sm font-medium uppercase tracking-[0.2em] text-accent-primary">
             Билеты
           </span>
@@ -107,7 +107,7 @@ export function Tickets() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5 lg:gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-5 lg:gap-6">
           {tiers.map((tier) => (
             <div
               key={tier.id}

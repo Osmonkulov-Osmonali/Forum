@@ -64,7 +64,7 @@ export function Team() {
       <div className="mx-auto max-w-6xl">
 
         {/* Header */}
-        <div className="mb-14 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between lg:mb-16">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between md:mb-14 lg:mb-16">
           <div>
             <span className="mb-5 block font-sans text-sm font-medium uppercase tracking-[0.2em] text-accent-primary">
               Команда
@@ -80,7 +80,7 @@ export function Team() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 gap-px bg-[#E2E8F0] sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-px bg-[#E2E8F0] sm:grid-cols-3 lg:grid-cols-4">
           {team.map((member) => (
             <div
               key={member.id}

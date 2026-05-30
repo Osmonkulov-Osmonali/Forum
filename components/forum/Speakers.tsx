@@ -155,7 +155,7 @@ export function Speakers() {
   return (
     <section id="speakers" className="bg-background px-4 py-12 md:px-8 md:py-24 lg:py-36">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-12 lg:mb-16">
+        <div className="mb-8 md:mb-12 lg:mb-16">
           <span className="mb-4 block text-sm font-medium uppercase tracking-wider text-accent-primary">
             Спикеры
           </span>
@@ -164,7 +164,7 @@ export function Speakers() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 gap-px bg-border sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-px bg-border sm:grid-cols-3 lg:grid-cols-4">
           {speakers.map((speaker) => (
             <button
               key={speaker.id}

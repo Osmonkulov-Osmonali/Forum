@@ -193,7 +193,7 @@ export function Footer() {
 
             {/* Social links */}
             <nav aria-label="Социальные сети">
-              <ul className="flex flex-wrap gap-4">
+              <ul className="grid grid-cols-2 gap-x-6 gap-y-3 sm:flex sm:flex-wrap sm:gap-4">
                 {SOCIAL.map((s) => (
                   <li key={s.id}>
                     <a
@@ -208,7 +208,7 @@ export function Footer() {
                       "
                     >
                       {s.icon}
-                      <span className="hidden sm:inline">{s.label}</span>
+                      <span>{s.label}</span>
                     </a>
                   </li>
                 ))}

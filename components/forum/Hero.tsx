@@ -81,11 +81,11 @@ export function Hero() {
         {/* Meta badges */}
         <motion.div
           variants={item}
-          className="mb-12 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-0"
+          className="mb-8 flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-0 md:mb-12"
         >
           {META.map(({ icon: Icon, text }, i) => (
             <div key={text} className="flex items-center">
-              <span className="inline-flex items-center gap-2 px-4 text-sm text-foreground sm:text-base">
+              <span className="inline-flex items-center gap-1.5 px-3 text-xs text-foreground sm:px-4 sm:text-sm md:text-base">
                 <Icon className="size-4 shrink-0 text-[#8ECAE6]" />
                 {text}
               </span>
