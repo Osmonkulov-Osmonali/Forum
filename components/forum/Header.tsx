@@ -9,12 +9,15 @@ const NAV_LINKS = [
   { label: "О событии",   href: "#about" },
   { label: "Спикеры",    href: "#speakers" },
   { label: "Программа",  href: "#schedule" },
-  { label: "Регистрация", href: "#registration" },
+  { label: "Билеты",     href: "#tickets" },
+  { label: "Команда",    href: "#team" },
 ];
 
+const MOBILE_NAV_ID = "mobile-nav";
+
 export function Header() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled,  setScrolled]  = useState(false);
+  const [menuOpen,  setMenuOpen]  = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -22,7 +25,6 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close menu on resize to desktop
   useEffect(() => {
     const onResize = () => {
       if (window.innerWidth >= 768) setMenuOpen(false);
@@ -31,7 +33,8 @@ export function Header() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  function closeMenu() {
+  // Close menu and let the browser follow the anchor
+  function handleNavClick() {
     setMenuOpen(false);
   }
 
@@ -46,22 +49,32 @@ export function Header() {
         )}
       >
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 md:h-16 md:px-6">
-          {/* Logo */}
+
+          {/* Logo — href="/" so screen readers announce it as "home" */}
           <a
-            href="#"
-            onClick={closeMenu}
-            className="font-heading text-base font-semibold tracking-tight text-foreground-dark select-none md:text-lg"
+            href="/"
+            onClick={handleNavClick}
+            className="
+              font-heading text-base font-semibold tracking-tight text-foreground-dark select-none
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2
+              md:text-lg
+            "
+            aria-label="Grant Circle Central Asia — главная"
           >
             Grant Circle Central Asia
           </a>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-8" aria-label="Разделы">
+          <nav className="hidden md:flex items-center gap-8" aria-label="Основная навигация">
             {NAV_LINKS.map(({ label, href }) => (
               <a
                 key={href}
                 href={href}
-                className="text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                className="
+                  text-sm font-medium text-muted-foreground transition-colors duration-200
+                  [@media(hover:hover)]:hover:text-foreground
+                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:rounded-sm
+                "
               >
                 {label}
               </a>
@@ -70,11 +83,19 @@ export function Header() {
 
           {/* Right side */}
           <div className="flex items-center gap-3">
-            {/* CTA — always visible */}
+            {/* CTA — hidden on xs, shown sm+ */}
             <a
               href="#registration"
-              onClick={closeMenu}
-              className="inline-flex items-center border border-foreground px-4 py-1.5 text-xs font-medium text-foreground transition-colors duration-200 hover:bg-foreground hover:text-background md:px-5 md:py-2 md:text-sm"
+              onClick={handleNavClick}
+              className="
+                hidden sm:inline-flex items-center
+                border border-foreground px-4 py-1.5 text-xs font-medium text-foreground
+                transition-colors duration-200
+                [@media(hover:hover)]:hover:bg-foreground [@media(hover:hover)]:hover:text-background
+                active:bg-foreground active:text-background
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2
+                md:px-5 md:py-2 md:text-sm
+              "
             >
               Регистрация
             </a>
@@ -84,18 +105,24 @@ export function Header() {
               type="button"
               aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
               aria-expanded={menuOpen}
+              aria-controls={MOBILE_NAV_ID}
               onClick={() => setMenuOpen((o) => !o)}
-              className="flex md:hidden items-center justify-center rounded-sm p-1 text-foreground transition-colors"
+              className="
+                flex md:hidden items-center justify-center rounded-sm p-2 text-foreground
+                transition-colors
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2
+              "
             >
-              {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+              {menuOpen ? <X className="size-5" aria-hidden /> : <Menu className="size-5" aria-hidden />}
             </button>
           </div>
         </div>
 
-        {/* Mobile dropdown menu */}
+        {/* Mobile dropdown */}
         <AnimatePresence>
           {menuOpen && (
             <motion.nav
+              id={MOBILE_NAV_ID}
               key="mobile-menu"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
@@ -104,13 +131,18 @@ export function Header() {
               className="overflow-hidden border-t border-[#E2E8F0] bg-white/95 backdrop-blur-md md:hidden"
               aria-label="Мобильное меню"
             >
-              <ul className="flex flex-col px-4 py-4">
+              <ul className="flex flex-col px-4 py-4" role="list">
                 {NAV_LINKS.map(({ label, href }) => (
                   <li key={href}>
                     <a
                       href={href}
-                      onClick={closeMenu}
-                      className="flex items-center py-3 text-base font-medium text-foreground transition-colors hover:text-accent-primary"
+                      onClick={handleNavClick}
+                      className="
+                        flex min-h-12 items-center py-3 text-base font-medium text-foreground
+                        transition-colors
+                        [@media(hover:hover)]:hover:text-accent-primary
+                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:rounded-sm
+                      "
                     >
                       {label}
                     </a>

@@ -192,9 +192,13 @@ function SessionRow({
       <button
         type="button"
         onClick={hasContent ? onToggle : undefined}
+        aria-expanded={hasContent ? isOpen : undefined}
         className={cn(
           "group flex w-full items-start gap-3 px-4 py-4 text-left transition-colors duration-150 sm:gap-6 sm:px-6 sm:py-5",
-          hasContent ? "hover:bg-background-secondary" : "cursor-default"
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-inset",
+          hasContent
+            ? "[@media(hover:hover)]:hover:bg-background-secondary"
+            : "cursor-default"
         )}
         disabled={!hasContent}
       >
@@ -257,25 +261,26 @@ function SessionRow({
             transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className="border-t border-[#E2E8F0] px-4 pb-5 pt-4 pl-[calc(1rem+6rem+0.75rem)] sm:px-6 sm:pl-[calc(1.5rem+8rem+1.5rem)]">
+            <div className="border-t border-[#E2E8F0] px-4 pb-5 pt-4 sm:pl-[calc(1.5rem+8rem+1.5rem)] sm:px-6">
 
               {/* Sub-schedule items */}
               {session.subItems && session.subItems.length > 0 && (
-                <ul className="mb-3 space-y-1.5">
+                <ul className="mb-3 space-y-3 sm:space-y-1.5">
                   {session.subItems.map((item) => (
                     <li
                       key={item.time}
                       className={cn(
-                        "flex items-baseline gap-3 font-sans text-xs sm:text-sm",
+                        "flex flex-col gap-0.5 font-sans text-xs sm:flex-row sm:items-baseline sm:gap-3 sm:text-sm",
                         item.isQA
                           ? "text-muted-foreground/70"
                           : "text-foreground"
                       )}
                     >
-                      <span className="w-24 shrink-0 tabular-nums text-muted-foreground/60 sm:w-28">
+                      {/* Time — small label above on mobile, fixed-width column on sm+ */}
+                      <span className="tabular-nums text-muted-foreground/60 sm:w-28 sm:shrink-0">
                         {item.time}
                       </span>
-                      <span>{item.label}</span>
+                      <span className="leading-snug">{item.label}</span>
                     </li>
                   ))}
                 </ul>

@@ -1,5 +1,3 @@
-"use client";
-
 import { cn } from "@/lib/utils";
 
 type Partner = {
@@ -48,9 +46,10 @@ function LogoCard({ partner }: { partner: Partner }) {
       className={cn(
         "group mx-6 flex shrink-0 items-center justify-center",
         "h-14 min-w-[9rem] rounded-none border border-[#E2E8F0] px-6",
-        "grayscale transition-all duration-500 hover:grayscale-0",
-        "opacity-50 hover:opacity-100",
-        "bg-background hover:border-accent-primary/40",
+        "grayscale transition-all duration-500 [@media(hover:hover)]:hover:grayscale-0",
+        "opacity-50 [@media(hover:hover)]:hover:opacity-100",
+        "bg-background [@media(hover:hover)]:hover:border-accent-primary/40",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:rounded-sm",
       )}
     >
       {partner.logo ? (
@@ -65,7 +64,7 @@ function LogoCard({ partner }: { partner: Partner }) {
           className={cn(
             "select-none whitespace-nowrap font-sans text-sm font-semibold tracking-tight",
             "text-foreground/40 transition-colors duration-500",
-            `group-hover:${TIER_COLOR[partner.tier]}`,
+            `[@media(hover:hover)]:group-hover:${TIER_COLOR[partner.tier]}`,
           )}
         >
           {partner.name}

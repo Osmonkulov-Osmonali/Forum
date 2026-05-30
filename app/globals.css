@@ -131,6 +131,13 @@
   html {
     overflow-x: hidden;
   }
+  /* Prevent any media from breaking out of its container */
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
   h1,
   h2,
   h3,
@@ -159,5 +166,29 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* ── Skip navigation (appears only on keyboard focus) ── */
+  .skip-nav {
+    position: fixed;
+    top: -100%;
+    left: 1rem;
+    z-index: 9999;
+    padding: 0.5rem 1rem;
+    background: #1E293B;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: top 0.15s ease;
+  }
+  .skip-nav:focus {
+    top: 1rem;
+    outline: 2px solid #8ECAE6;
+    outline-offset: 2px;
+  }
+
+  /* ── Unified focus ring for all interactive elements ── */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2;
   }
 }

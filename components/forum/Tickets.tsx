@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -109,15 +110,29 @@ export function Tickets() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-5 lg:gap-6">
           {tiers.map((tier) => (
-            <div
+            /*
+              whileHover: lift + shadow (only fires on pointer devices via Framer Motion's
+              internal pointer detection — no hover state sticking on touch).
+              whileTap: micro-scale + border glow for tap feedback.
+            */
+            <motion.div
               key={tier.id}
               className={cn(
-                "group relative flex flex-col border transition-all duration-300",
-                "hover:-translate-y-[3px] hover:shadow-[0_8px_32px_-8px_rgba(142,202,230,0.35)]",
+                "group relative flex flex-col border",
                 tier.featured
                   ? "border-accent-secondary shadow-[0_0_0_1px_#A2D2FF]"
                   : "border-[#E2E8F0]"
               )}
+              whileHover={{
+                y: -3,
+                boxShadow: "0 8px 32px -8px rgba(142,202,230,0.35)",
+                transition: { duration: 0.2, ease: "easeOut" },
+              }}
+              whileTap={{
+                scale: 0.98,
+                boxShadow: "0 0 0 2px rgba(142,202,230,0.55)",
+                transition: { duration: 0.12 },
+              }}
             >
               {tier.featured && (
                 <div className="bg-accent-secondary px-4 py-1.5 text-center font-sans text-[11px] font-semibold uppercase tracking-wider text-foreground">
@@ -177,14 +192,14 @@ export function Tickets() {
                     "block w-full border py-3 text-center font-sans text-sm font-medium",
                     "transition-all duration-200",
                     tier.featured
-                      ? "border-accent-secondary bg-transparent text-foreground hover:bg-accent-secondary"
-                      : "border-accent-primary bg-transparent text-foreground hover:bg-accent-primary"
+                      ? "border-accent-secondary bg-transparent text-foreground [@media(hover:hover)]:hover:bg-accent-secondary"
+                      : "border-accent-primary bg-transparent text-foreground [@media(hover:hover)]:hover:bg-accent-primary"
                   )}
                 >
                   Выбрать
                 </a>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 

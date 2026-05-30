@@ -110,9 +110,11 @@ export async function POST(req: NextRequest) {
   try {
     await prisma.registration.create({
       data: {
-        name:  `${firstName} ${lastName}`,
-        email: email || `noemail_${Date.now()}@placeholder`,
+        firstName,
+        lastName,
+        email: email || null,
         phone,
+        format,
       },
     });
   } catch (err) {

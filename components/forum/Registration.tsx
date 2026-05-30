@@ -27,6 +27,7 @@ function Field({
   value: string; onChange: (v: string) => void; icon: React.ReactNode;
   disabled: boolean; error?: string; autoComplete?: string; required?: boolean;
 }) {
+  const errorId = `${id}-error`;
   return (
     <div className="space-y-1.5">
       <label htmlFor={id} className="flex items-center gap-1 font-sans text-sm font-medium text-foreground">
@@ -36,7 +37,10 @@ function Field({
         )}
       </label>
       <div className="relative">
-        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-muted-foreground/50">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-muted-foreground/50"
+        >
           {icon}
         </span>
         <input
@@ -47,18 +51,28 @@ function Field({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           disabled={disabled}
+          required={required}
+          aria-required={required}
+          aria-invalid={error ? "true" : undefined}
+          aria-describedby={error ? errorId : undefined}
           className={cn(
             "w-full border bg-background py-3 pl-10 pr-4",
             "font-sans text-sm text-foreground placeholder:text-muted-foreground/40",
-            "outline-none transition-colors duration-150 focus:border-accent-primary",
+            "outline-none transition-colors duration-150",
+            "focus:border-accent-primary focus-visible:ring-2 focus-visible:ring-accent-primary/30 focus-visible:ring-offset-0",
             "disabled:opacity-60 disabled:cursor-not-allowed",
             error ? "border-red-400 focus:border-red-400" : "border-[#E2E8F0]"
           )}
         />
       </div>
       {error && (
-        <p className="flex items-center gap-1.5 font-sans text-xs text-red-500">
-          <AlertCircle className="size-3 shrink-0" />
+        <p
+          id={errorId}
+          role="alert"
+          aria-live="polite"
+          className="flex items-center gap-1.5 font-sans text-xs text-red-500"
+        >
+          <AlertCircle className="size-3 shrink-0" aria-hidden />
           {error}
         </p>
       )}
@@ -99,13 +113,14 @@ function FormatPicker({
             type="button"
             disabled={disabled}
             onClick={() => onChange(opt.value)}
+            aria-pressed={value === opt.value}
             className={cn(
               "flex flex-col items-start gap-1 border p-3.5 text-left transition-all duration-150",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2",
               "disabled:opacity-60 disabled:cursor-not-allowed",
               value === opt.value
                 ? "border-accent-primary bg-accent-primary/5"
-                : "border-[#E2E8F0] hover:border-accent-primary/40"
+                : "border-[#E2E8F0] [@media(hover:hover)]:hover:border-accent-primary/40"
             )}
           >
             <span
@@ -123,7 +138,7 @@ function FormatPicker({
               </span>
               {opt.label}
             </span>
-            <span className="font-sans text-xs text-muted-foreground">{opt.sub}</span>
+            <span className="font-sans text-[10px] leading-tight text-muted-foreground sm:text-xs">{opt.sub}</span>
           </button>
         ))}
       </div>
@@ -250,8 +265,8 @@ export function Registration() {
 
           {/* Left — event highlights */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.55, ease: "easeOut", delay: 0.1 }}
             className="flex flex-col justify-center"
           >
@@ -291,8 +306,8 @@ export function Registration() {
 
           {/* Right — form / success */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.55, ease: "easeOut", delay: 0.15 }}
           >
 
@@ -323,7 +338,7 @@ export function Registration() {
               <form
                 onSubmit={handleSubmit}
                 noValidate
-                className="space-y-5 border border-[#E2E8F0] bg-background-secondary p-6 sm:p-8"
+                className="space-y-5 border border-[#E2E8F0] bg-background-secondary p-4 sm:p-6 lg:p-8"
               >
                 {/* First + Last name in a row */}
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -387,8 +402,12 @@ export function Registration() {
 
                 {/* Server error banner */}
                 {status === "error" && (
-                  <div className="flex items-start gap-2.5 border border-red-200 bg-red-50 px-4 py-3">
-                    <AlertCircle className="mt-0.5 size-4 shrink-0 text-red-500" />
+                  <div
+                    role="alert"
+                    aria-live="assertive"
+                    className="flex items-start gap-2.5 border border-red-200 bg-red-50 px-4 py-3"
+                  >
+                    <AlertCircle className="mt-0.5 size-4 shrink-0 text-red-500" aria-hidden />
                     <p className="font-sans text-sm text-red-600">{message}</p>
                   </div>
                 )}
@@ -398,10 +417,12 @@ export function Registration() {
                   type="submit"
                   disabled={isLoading}
                   className={cn(
-                    "flex w-full items-center justify-center gap-2 py-3.5",
+                    "flex w-full items-center justify-center gap-2",
+                    "min-h-14 py-3.5 sm:min-h-12",
                     "bg-[#8ECAE6] font-sans text-sm font-semibold text-[#1E293B]",
                     "transition-all duration-200",
-                    "hover:bg-[#1E293B] hover:text-[#8ECAE6]",
+                    "[@media(hover:hover)]:hover:bg-[#1E293B] [@media(hover:hover)]:hover:text-[#8ECAE6]",
+                    "active:bg-[#1E293B] active:text-[#8ECAE6]",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ECAE6]",
                     "disabled:opacity-60 disabled:cursor-not-allowed"
                   )}

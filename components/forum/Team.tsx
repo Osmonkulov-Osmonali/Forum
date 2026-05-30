@@ -1,5 +1,8 @@
 "use client";
 
+import Image from "next/image";
+import { motion } from "framer-motion";
+
 type Member = {
   id: string;
   name: string;
@@ -60,7 +63,7 @@ const team: Member[] = [
 
 export function Team() {
   return (
-    <section className="bg-background-secondary px-4 py-12 md:px-8 md:py-24 lg:py-36">
+    <section id="team" className="bg-background-secondary px-4 py-12 md:px-8 md:py-24 lg:py-36">
       <div className="mx-auto max-w-6xl">
 
         {/* Header */}
@@ -79,25 +82,39 @@ export function Team() {
           </p>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-2 gap-px bg-[#E2E8F0] sm:grid-cols-3 lg:grid-cols-4">
+        {/* Grid — 1 col on mobile, 2 on sm, 4 on lg */}
+        <div className="grid grid-cols-1 gap-px bg-[#E2E8F0] sm:grid-cols-2 lg:grid-cols-4">
           {team.map((member) => (
-            <div
+            /*
+              whileTap: micro-scale + border highlight for touch devices.
+              group-hover photo effects are gated behind @media(hover:hover)
+              so they never trigger on tap-only (touch) screens.
+            */
+            <motion.div
               key={member.id}
               className="group relative overflow-hidden bg-background-secondary"
+              whileTap={{ scale: 0.98, transition: { duration: 0.12 } }}
             >
-              {/* Photo */}
-              <div className="aspect-[3/4] overflow-hidden">
-                <img
+              {/* Tap border highlight — visible on press via outline */}
+              <motion.div
+                className="pointer-events-none absolute inset-0 z-10 border border-transparent"
+                whileTap={{ borderColor: "rgba(142,202,230,0.7)", transition: { duration: 0.1 } }}
+              />
+
+              {/* Photo — next/image for automatic WebP/AVIF conversion */}
+              <div className="relative aspect-[3/4] overflow-hidden">
+                <Image
                   src={member.photo}
                   alt={member.name}
+                  fill
                   draggable={false}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="
-                    size-full object-cover
+                    object-cover
                     transition-all duration-700 ease-out
                     [filter:grayscale(100%)_brightness(0.92)_saturate(0)_sepia(0.08)]
-                    group-hover:[filter:grayscale(0%)_brightness(1)_saturate(1.1)_sepia(0)]
-                    group-hover:scale-[1.03]
+                    [@media(hover:hover)]:group-hover:[filter:grayscale(0%)_brightness(1)_saturate(1.1)_sepia(0)]
+                    [@media(hover:hover)]:group-hover:scale-[1.03]
                   "
                 />
               </div>
@@ -112,16 +129,16 @@ export function Team() {
                 </p>
               </div>
 
-              {/* Accent bar — slides in from left on hover */}
+              {/* Accent bar — slides in from left on hover (pointer devices only) */}
               <div
                 className="
                   absolute inset-x-0 bottom-0 h-0.5
                   origin-left scale-x-0 bg-accent-secondary
                   transition-transform duration-500 ease-out
-                  group-hover:scale-x-100
+                  [@media(hover:hover)]:group-hover:scale-x-100
                 "
               />
-            </div>
+            </motion.div>
           ))}
         </div>
 

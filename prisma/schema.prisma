@@ -35,44 +35,36 @@ model Subscriber {
   @@map("subscribers")
 }
 
-/// Event registration (name + email + phone)
+/// Event registration
 model Registration {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  phone     String
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  firstName  String
+  lastName   String
+  email      String?           // optional — stored as NULL when not provided
+  phone      String
+  format     String            // "Offline" | "Online"
+  createdAt  DateTime @default(now())
 
-  @@index([email])
+  @@index([createdAt])
   @@map("registrations")
 }
 
 /// Forum speaker
 model Speaker {
-  id       String    @id @default(cuid())
-  name     String
-  role     String
-  company  String
-  bio      String    @db.Text
-  imageUrl String
+  id          String   @id @default(cuid())
+  name        String
+  position    String
+  company     String?
+  description String   @db.Text
+  imageUrl    String
+  country     String?
+  continent   String?           // "na" | "europe" | "asia" | "other"
+  featured    Boolean  @default(false)
+  visible     Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  sessions Session[]
-
+  @@index([visible, sortOrder])
   @@map("speakers")
-}
-
-/// Agenda session (talk / workshop)
-model Session {
-  id        String   @id @default(cuid())
-  title     String
-  location  String
-  startTime DateTime
-  endTime   DateTime
-
-  speakerId String
-  speaker   Speaker  @relation(fields: [speakerId], references: [id], onDelete: Cascade)
-
-  @@index([speakerId])
-  @@index([startTime])
-  @@map("sessions")
 }

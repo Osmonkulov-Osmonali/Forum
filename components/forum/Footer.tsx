@@ -138,18 +138,22 @@ export function Footer() {
                       placeholder:text-muted-foreground/60
                       outline-none transition-colors duration-150
                       focus:border-accent-primary
+                      focus-visible:ring-2 focus-visible:ring-accent-primary/30
                       disabled:opacity-60
                     "
                   />
                   <button
                     type="submit"
                     disabled={status === "loading"}
+                    aria-label="Подписаться на рассылку"
                     className="
                       flex shrink-0 items-center gap-2 border border-accent-primary
                       bg-transparent px-5 py-3
                       font-sans text-sm font-medium text-[#1E293B]
                       transition-colors duration-200
-                      hover:bg-accent-primary
+                      [@media(hover:hover)]:hover:bg-accent-primary
+                      active:bg-accent-primary
+                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2
                       disabled:opacity-60 disabled:cursor-not-allowed
                     "
                   >
@@ -204,7 +208,9 @@ export function Footer() {
                       className="
                         inline-flex items-center gap-2
                         font-sans text-sm text-[#1E293B]/60
-                        transition-colors duration-150 hover:text-[#1E293B]
+                        transition-colors duration-150
+                        [@media(hover:hover)]:hover:text-[#1E293B]
+                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:rounded-sm
                       "
                     >
                       {s.icon}

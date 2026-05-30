@@ -2,6 +2,7 @@
 
 import { motion, type Variants } from "framer-motion";
 import { MapPin, Clock, Monitor } from "lucide-react";
+import { HeroCanvas } from "@/components/forum/HeroCanvas";
 
 const container: Variants = {
   hidden: {},
@@ -23,14 +24,15 @@ const item: Variants = {
 };
 
 const META = [
-  { icon: MapPin,    text: "Technopark, Bishkek" },
-  { icon: Clock,     text: "12:00 – 19:00" },
-  { icon: Monitor,   text: "Offline & Zoom Stream" },
+  { icon: MapPin,  text: "Technopark, Bishkek" },
+  { icon: Clock,   text: "12:00 – 19:00" },
+  { icon: Monitor, text: "Offline & Zoom Stream" },
 ];
 
 export function Hero() {
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 pt-14 md:px-6 md:pt-16">
+
       {/* ── Background glow blobs ── */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -left-32 -top-32 h-[520px] w-[520px] rounded-full bg-[#8ECAE6]/25 blur-[120px]" />
@@ -38,9 +40,34 @@ export function Hero() {
         <div className="absolute bottom-0 left-1/2 h-[260px] w-[480px] -translate-x-1/2 rounded-full bg-[#8ECAE6]/15 blur-[80px]" />
       </div>
 
-      {/* ── Content ── */}
+      {/*
+        ── Canvas: mobile = absolute background, desktop = right half ──
+        On mobile (< md):
+          • absolute inset-0, z-0, opacity-40, pointer-events-none
+          • sits behind text; full-section background
+        On desktop (≥ md):
+          • absolute right half of the section, z-0
+          • mouse parallax active
+      */}
+      <HeroCanvas
+        className="
+          pointer-events-none select-none
+          absolute inset-0 z-0
+          opacity-40
+          md:inset-y-0 md:left-1/2 md:right-0 md:opacity-100
+        "
+      />
+
+      {/*
+        ── Content ──
+        On mobile: full-width, centred, sits above canvas (z-10)
+        On desktop: left half, z-10
+      */}
       <motion.div
-        className="mx-auto max-w-4xl text-center"
+        className="
+          relative z-10 mx-auto w-full max-w-4xl text-center
+          md:mx-0 md:max-w-[52%] md:text-left
+        "
         variants={container}
         initial="hidden"
         animate="show"
@@ -48,7 +75,7 @@ export function Hero() {
         {/* Eyebrow */}
         <motion.p
           variants={item}
-          className="mb-4 text-sm font-medium uppercase tracking-[0.22em] text-muted-foreground"
+          className="mb-4 text-sm font-medium uppercase tracking-[0.1em] text-muted-foreground sm:tracking-[0.22em]"
         >
           Lead+ Youth Academy · powered by Logos.kg
         </motion.p>
@@ -65,7 +92,7 @@ export function Hero() {
         {/* Subheading */}
         <motion.p
           variants={item}
-          className="mx-auto mb-8 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg md:mb-10 lg:text-xl"
+          className="mx-auto mb-8 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg md:mx-0 md:mb-10 lg:text-xl"
         >
           Масштабное событие для школьников, студентов и родителей —
           <br className="hidden sm:block" />
@@ -75,7 +102,7 @@ export function Hero() {
         {/* Meta badges */}
         <motion.div
           variants={item}
-          className="mb-8 flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-0 md:mb-12"
+          className="mb-8 flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-0 md:mb-12 md:justify-start"
         >
           {META.map(({ icon: Icon, text }, i) => (
             <div key={text} className="flex items-center">
@@ -91,17 +118,18 @@ export function Hero() {
         </motion.div>
 
         {/* CTA */}
-        <motion.div variants={item}>
+        <motion.div variants={item} className="flex justify-center md:justify-start">
           <a
             href="#registration"
             className="
               group inline-flex w-full items-center justify-center gap-2
-              bg-[#8ECAE6] px-8 py-3.5
+              min-h-14 bg-[#8ECAE6] px-8 py-3.5
               text-sm font-semibold text-[#1E293B]
               transition-all duration-300
-              hover:bg-[#1E293B] hover:text-[#8ECAE6]
+              [@media(hover:hover)]:hover:bg-[#1E293B] [@media(hover:hover)]:hover:text-[#8ECAE6]
+              active:bg-[#1E293B] active:text-[#8ECAE6]
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ECAE6]
-              sm:w-auto sm:px-10 sm:py-4 sm:text-base
+              sm:w-auto sm:min-h-12 sm:px-10 sm:py-4 sm:text-base
             "
           >
             Зарегистрироваться

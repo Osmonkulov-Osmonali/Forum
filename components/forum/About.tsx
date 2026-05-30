@@ -19,12 +19,25 @@ function Counter({ value, suffix = "" }: CounterProps) {
   const spring = useSpring(0, { stiffness: 60, damping: 24 });
   const [display, setDisplay] = useState(0);
 
+  /**
+   * MotionConfig reducedMotion="user" only stops motion.* component
+   * transitions — it does NOT stop useSpring. We must guard manually.
+   */
+  const reducedMotionRef = useRef(false);
+  useEffect(() => {
+    reducedMotionRef.current =
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }, []);
+
   useMotionValueEvent(spring, "change", (latest) => {
     setDisplay(Math.round(latest));
   });
 
   useEffect(() => {
-    if (isInView) {
+    if (!isInView) return;
+    if (reducedMotionRef.current) {
+      setDisplay(value); // instant — no spring, no rAF loop
+    } else {
       spring.set(value);
     }
   }, [isInView, spring, value]);
@@ -102,7 +115,7 @@ export function About() {
           initial={{ opacity: 0, y: 32 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
-          className="grid grid-cols-2 gap-6 border-t border-border pt-8 sm:grid-cols-4 md:gap-12 md:pt-16 lg:gap-16 lg:pt-20"
+          className="grid grid-cols-2 gap-4 border-t border-border pt-8 sm:grid-cols-4 sm:gap-6 md:gap-12 md:pt-16 lg:gap-16 lg:pt-20"
         >
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
