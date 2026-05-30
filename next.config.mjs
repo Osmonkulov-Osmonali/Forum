@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Three.js ecosystem packages ship as ESM-only — must be transpiled by Next.js
+  transpilePackages: [
+    "three",
+    "@react-three/fiber",
+    "@react-three/drei",
+    "@react-three/postprocessing",
+    "postprocessing",
+  ],
+
   images: {
     // Image optimization enabled (was unoptimized: true — that kills Lighthouse LCP scores)
     formats: ["image/avif", "image/webp"],
