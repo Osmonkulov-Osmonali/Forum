@@ -17,6 +17,25 @@ import { Footer }          from "@/components/forum/Footer";
   streaming skeletons instead.
 */
 
+// Globe uses Three.js — must be client-only (ssr: false)
+const GlobeSection = dynamic(
+  () => import("@/components/forum/InteractiveGlobe").then((m) => ({ default: m.InteractiveGlobe })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="relative h-[440px] overflow-hidden bg-[#020810] md:h-[640px]" aria-hidden>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="size-[280px] animate-pulse rounded-full bg-[#ff6b00]/5 md:size-[420px]" />
+        </div>
+        <div className="absolute left-4 top-6 space-y-2 sm:left-8">
+          <div className="h-3 w-28 animate-pulse bg-[#ff6b00]/20" />
+          <div className="h-6 w-40 animate-pulse bg-white/10" />
+        </div>
+      </div>
+    ),
+  }
+);
+
 const Partners = dynamic(
   () => import("@/components/forum/Partners").then((m) => ({ default: m.Partners })),
   {
@@ -144,6 +163,10 @@ export default function ForumLanding() {
       <main id="main-content" className="overflow-x-hidden">
         {/* Above-fold — statically imported, renders immediately */}
         <Hero />
+
+        {/* Globe WOW-block — Three.js, client-only, after Hero */}
+        <GlobeSection />
+
         <About />
 
         {/* Below-fold — dynamically imported, split into separate chunks */}
