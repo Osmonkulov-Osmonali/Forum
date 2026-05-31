@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { AdaptiveDpr, AdaptiveEvents, Html, Line } from "@react-three/drei";
 import { motion } from "framer-motion";
+import { GraduationCap } from "lucide-react";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
 import {
@@ -202,31 +203,36 @@ type MarkerKind = "source" | "active" | "default";
 function MarkerTooltip({ student }: { student: AppStudent }) {
   return (
     <Html
-      position={[0, 0.05, 0]}
+      position={[0, 0.035, 0]}
       center
-      distanceFactor={6}
+      distanceFactor={9}
       style={{ pointerEvents: "none" }}
+      zIndexRange={[40, 0]}
     >
       <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
+        initial={{ scale: 0.85, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 320, damping: 24 }}
+        exit={{ scale: 0.85, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 320, damping: 26 }}
         className="
-          flex w-64 translate-x-6 -translate-y-12 items-center gap-3
-          rounded-xl border border-white/20 bg-white/80 p-3
-          shadow-lg backdrop-blur-md
+          flex max-w-[220px] translate-x-4 -translate-y-4 items-center gap-2
+          rounded-full border border-white/30 bg-white/70 py-1.5 pl-1.5 pr-3
+          shadow-sm backdrop-blur-lg
         "
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={student.avatarUrl}
           alt=""
-          className="size-10 shrink-0 rounded-full border border-white/60 bg-slate-100 object-cover"
+          className="size-5 shrink-0 rounded-full border border-white/50 bg-slate-100 object-cover"
         />
-        <div className="min-w-0">
-          <p className="truncate text-sm font-bold text-[#0F172A]">{student.name}</p>
-          <p className="truncate text-xs text-[#64748B]">{student.university}</p>
-        </div>
+        <span className="truncate text-xs font-medium text-slate-800">
+          {student.name}
+        </span>
+        <GraduationCap className="size-3 shrink-0 text-[#3B6E8F]" aria-hidden />
+        <span className="max-w-[72px] truncate text-[10px] leading-none text-slate-500">
+          {student.university}
+        </span>
       </motion.div>
     </Html>
   );

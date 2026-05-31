@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { APP_STUDENTS } from "@/components/forum/appStudents";
 import { StudentList } from "@/components/forum/StudentList";
-import { StudentBottomSheet } from "@/components/forum/StudentBottomSheet";
 
 export { APP_STUDENTS, type AppStudent } from "@/components/forum/appStudents";
 
@@ -56,34 +55,20 @@ function useIsDesktopTooltip() {
  *
  * Controlled split section: one `selectedStudentId` drives both the 3-D globe
  * and the student list.
- *   • list click  → globe rotates toward `coordinates`, arc animates
- *   • marker click → list highlights; mobile bottom sheet opens
+ *   • list swipe / tap → globe rotates toward `coordinates`, arc animates
+ *   • marker click     → list highlights and centers the matching card
  *
- * Desktop (sm+): floating glass tooltip via `<Html>` beside the active marker.
- * Mobile (<sm): bottom sheet with full student details; no in-canvas tooltip.
+ * Desktop (md+): compact globe badge + expanding cards in the right grid.
+ * Mobile (<md):  expanding carousel — active card grows inline.
  */
 export function GlobeSplitSection() {
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     APP_STUDENTS[0]?.id ?? null,
   );
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const isDesktopTooltip = useIsDesktopTooltip();
 
-  const selectedStudent =
-    APP_STUDENTS.find((s) => s.id === selectedStudentId) ?? null;
-
-  const handleSelect = useCallback(
-    (id: string) => {
-      setSelectedStudentId(id);
-      if (typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches) {
-        setIsSheetOpen(true);
-      }
-    },
-    [],
-  );
-
-  const handleCloseSheet = useCallback(() => {
-    setIsSheetOpen(false);
+  const handleSelect = useCallback((id: string) => {
+    setSelectedStudentId(id);
   }, []);
 
   return (
@@ -115,7 +100,7 @@ export function GlobeSplitSection() {
           </h2>
           <p className="mt-4 max-w-xl text-pretty text-base text-slate-500 sm:text-lg">
             Выбери студента — глобус развернётся к его городу и прочертит путь из
-            Бишкека. На телефоне откроется карточка снизу.
+            Бишкека. Подробности раскрываются прямо в карточке справа.
           </p>
         </motion.div>
 
@@ -144,12 +129,6 @@ export function GlobeSplitSection() {
           </div>
         </div>
       </div>
-
-      <StudentBottomSheet
-        student={selectedStudent}
-        open={isSheetOpen}
-        onClose={handleCloseSheet}
-      />
     </section>
   );
 }
