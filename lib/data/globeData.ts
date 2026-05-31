@@ -115,7 +115,3 @@ export const SPEAKER_PATHS: SpeakerPath[] = [
 export const CATEGORIES: PathCategory[] = [
   "Азия", "Северная Америка", "Европа", "Ближний Восток",
 ];
-
-export function getPathsByCategory(cat: PathCategory): SpeakerPath[] {
-  return SPEAKER_PATHS.filter((p) => p.category === cat);
-}

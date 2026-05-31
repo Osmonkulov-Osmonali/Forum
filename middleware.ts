@@ -4,12 +4,12 @@ import { verifySessionToken, SESSION_COOKIE } from "@/lib/session";
 /**
  * Route protection rules:
  *  - /admin/login          → always public
- *  - /api/admin/login      → always public (sets the cookie)
+ *  - /api/admin/login      → always public (sets the session cookie)
  *  - /api/admin/logout     → always public (clears the cookie)
  *  - GET /api/speakers     → public (landing page reads speakers)
  *  - everything else       → requires valid admin_session cookie
  */
-export async function proxy(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // ── Always-public paths ──────────────────────────────────────────────────────

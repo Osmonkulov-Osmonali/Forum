@@ -1,11 +1,9 @@
-import { Suspense }         from "react";
 import dynamic             from "next/dynamic";
 import { SmoothScroll }    from "@/components/SmoothScroll";
 import { Header }          from "@/components/forum/Header";
 import { Hero }            from "@/components/forum/Hero";
 import { About }           from "@/components/forum/About";
-import { GlobeDynamic }    from "@/components/forum/GlobeDynamic";
-import { SpeakersSection } from "@/components/forum/SpeakersSection";
+import { GlobeSplitSection } from "@/components/forum/GlobeSplitSection";
 import { Footer }          from "@/components/forum/Footer";
 
 /*
@@ -18,8 +16,8 @@ import { Footer }          from "@/components/forum/Footer";
   streaming skeletons instead.
 */
 
-// Globe uses Three.js — ssr:false lives in GlobeDynamic (Client Component)
-// because Next.js 16 forbids dynamic({ssr:false}) in Server Components.
+// GlobeSplitSection is a Client Component that bundles the Three.js globe
+// (ssr:false) and the StudentListPlaceholder in a two-column sticky layout.
 
 const Partners = dynamic(
   () => import("@/components/forum/Partners").then((m) => ({ default: m.Partners })),
@@ -39,29 +37,9 @@ const Partners = dynamic(
   }
 );
 
-// SpeakersSection is a Server Component — loaded via React Suspense streaming.
-// No dynamic() needed: Suspense handles the skeleton automatically.
-function SpeakersSkeleton() {
-  return (
-    <div className="bg-background px-4 py-12 md:px-8 md:py-24" aria-hidden>
-      <div className="mx-auto max-w-7xl space-y-4">
-        <div className="h-6 w-24 animate-pulse bg-slate-100" />
-        <div className="h-8 w-56 animate-pulse bg-slate-100" />
-        <div className="mt-6 grid grid-cols-1 gap-px bg-[#E2E8F0] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="bg-background">
-              <div className="aspect-square animate-pulse bg-slate-100" />
-              <div className="border-t border-[#E2E8F0] p-3 space-y-2">
-                <div className="h-4 w-28 animate-pulse bg-slate-100" />
-                <div className="h-3 w-24 animate-pulse bg-slate-100" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+// SpeakersSection has been replaced by GlobeSplitSection (Globe + student list).
+// Keeping the skeleton helper commented out in case it's needed again.
+// function SpeakersSkeleton() { ... }
 
 const Schedule = dynamic(
   () => import("@/components/forum/Schedule").then((m) => ({ default: m.Schedule })),
@@ -149,16 +127,14 @@ export default function ForumLanding() {
         {/* Above-fold — statically imported, renders immediately */}
         <Hero />
 
-        {/* Globe WOW-block — Three.js, client-only, after Hero */}
-        <GlobeDynamic />
+        {/* Globe + Student list split section (replaces standalone GlobeDynamic + SpeakersSection) */}
+        <GlobeSplitSection />
 
         <About />
 
         {/* Below-fold — dynamically imported, split into separate chunks */}
         <Partners />
-        <Suspense fallback={<SpeakersSkeleton />}>
-          <SpeakersSection />
-        </Suspense>
+        {/* <SpeakersSection /> — replaced by GlobeSplitSection above */}
         <Schedule />
         <Tickets />
         <Team />
