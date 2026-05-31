@@ -11,7 +11,7 @@ import { StudentList } from "@/components/forum/StudentList";
 function GlobeSkeleton() {
   return (
     <div
-      className="flex h-full w-full items-center justify-center bg-gradient-to-b from-[#F8FAFC] to-[#EFF6FB]"
+      className="flex h-full w-full items-center justify-center bg-transparent"
       aria-hidden
     >
       <div className="size-[200px] animate-pulse rounded-full bg-[#8ECAE6]/15 md:size-[340px]" />
@@ -89,12 +89,18 @@ export function GlobeSplitSection() {
         */}
         <div className="flex flex-col gap-8 md:grid md:h-[85vh] md:grid-cols-2 md:items-center md:gap-8">
           {/* Globe — sticky on mobile, static cell on desktop */}
-          <div className="sticky top-16 z-10 h-[40vh] w-full md:static md:h-[78vh]">
-            <StudentGlobe
-              students={STUDENTS}
-              activeId={activeId}
-              onSelect={setActiveId}
-            />
+          <div className="sticky top-16 z-10 h-[40vh] w-full bg-transparent md:static md:h-[78vh]">
+            <div className="relative h-full w-full bg-transparent">
+              <StudentGlobe
+                students={STUDENTS}
+                activeId={activeId}
+                onSelect={setActiveId}
+              />
+              <div
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,white_70%)]"
+                aria-hidden
+              />
+            </div>
           </div>
 
           {/* Student list — vertical bento scroll on desktop, swipe carousel on mobile */}

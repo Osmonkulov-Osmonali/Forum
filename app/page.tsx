@@ -12,7 +12,7 @@ import { Footer }          from "@/components/forum/Footer";
   above-fold Hero/About sections which matter most for Lighthouse LCP.
 
   `ssr: false` is only for components that call browser APIs at module
-  load time (e.g. HeroCanvas). All other sections are SSR-safe and use
+  load time. All other sections are SSR-safe and use
   streaming skeletons instead.
 */
 
@@ -74,31 +74,6 @@ const Tickets = dynamic(
   }
 );
 
-const Team = dynamic(
-  () => import("@/components/forum/Team").then((m) => ({ default: m.Team })),
-  {
-    loading: () => (
-      <div className="bg-background-secondary px-4 py-12 md:px-8 md:py-24" aria-hidden>
-        <div className="mx-auto max-w-6xl space-y-4">
-          <div className="h-6 w-24 animate-pulse bg-slate-200" />
-          <div className="h-8 w-48 animate-pulse bg-slate-200" />
-          <div className="mt-6 grid grid-cols-2 gap-px bg-[#E2E8F0] lg:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="bg-background-secondary">
-                <div className="aspect-[3/4] animate-pulse bg-slate-200" />
-                <div className="border-t border-[#E2E8F0] p-4 space-y-2">
-                  <div className="h-4 w-28 animate-pulse bg-slate-200" />
-                  <div className="h-3 w-20 animate-pulse bg-slate-200" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    ),
-  }
-);
-
 // Registration is now handled externally on Ticketon — the internal form
 // section has been removed. All "Регистрация" CTAs link to
 // TICKETON_REGISTRATION_URL (see config/links.ts).
@@ -128,7 +103,6 @@ export default function ForumLanding() {
         {/* <SpeakersSection /> — replaced by GlobeSplitSection above */}
         <Schedule />
         <Tickets />
-        <Team />
       </main>
 
       <Footer />

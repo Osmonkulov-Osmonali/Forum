@@ -1,7 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Send, Loader2 } from "lucide-react";
+import { useCallback, useState } from "react";
+import { Send, Loader2, Sparkles } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const SOCIAL = [
   {
@@ -59,6 +66,44 @@ export function Footer() {
   const [email, setEmail]   = useState("");
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
+  const [secretOpen, setSecretOpen] = useState(false);
+
+  const triggerEasterEgg = useCallback(async () => {
+    try {
+      const confetti = (await import("canvas-confetti")).default;
+      const duration = 2200;
+      const end = Date.now() + duration;
+
+      const frame = () => {
+        confetti({
+          particleCount: 4,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.65 },
+          colors: ["#6366f1", "#f59e0b", "#10b981", "#ec4899"],
+        });
+        confetti({
+          particleCount: 4,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.65 },
+          colors: ["#6366f1", "#f59e0b", "#10b981", "#ec4899"],
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      };
+      frame();
+      confetti({
+        particleCount: 120,
+        spread: 90,
+        origin: { y: 0.55 },
+        scalar: 1.1,
+        colors: ["#6366f1", "#f59e0b", "#10b981", "#ec4899", "#ffffff"],
+      });
+    } catch {
+      /* confetti unavailable — modal still shows */
+    }
+    setSecretOpen(true);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -228,8 +273,25 @@ export function Footer() {
 
           {/* Copyright + legal */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="font-sans text-xs text-muted-foreground">
-              © {new Date().getFullYear()} Study free forum. Все права защищены.
+            <p className="inline-flex items-center gap-1 font-sans text-xs text-muted-foreground">
+              <span>
+                © {new Date().getFullYear()} Study free forum. Все права защищены.
+              </span>
+              <button
+                type="button"
+                onClick={triggerEasterEgg}
+                aria-label="Секретная комната"
+                title=""
+                className="
+                  inline-flex size-4 items-center justify-center
+                  text-muted-foreground/25 transition-all duration-200
+                  [@media(hover:hover)]:text-accent-secondary/70
+                  [@media(hover:hover)]:scale-110
+                  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent-primary/40
+                "
+              >
+                <Sparkles className="size-2.5" strokeWidth={1.5} aria-hidden />
+              </button>
             </p>
             <nav aria-label="Правовые документы">
               <ul className="flex flex-wrap gap-x-6 gap-y-2">
@@ -254,6 +316,20 @@ export function Footer() {
         </div>
       </div>
 
+      <Dialog open={secretOpen} onOpenChange={setSecretOpen}>
+        <DialogContent className="max-w-sm rounded-none border-[#E2E8F0] p-6 text-center sm:max-w-md">
+          <DialogHeader className="items-center text-center">
+            <DialogTitle className="font-sans text-lg font-semibold tracking-tight">
+              Секретная комната
+            </DialogTitle>
+            <DialogDescription className="font-sans text-sm leading-relaxed text-muted-foreground">
+              Поздравляем! Ты нашел секретную комнату будущих лидеров. Лови промокод на
+              секретный мерч:{" "}
+              <span className="font-semibold tracking-wide text-foreground">FUTURE2026!</span>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </footer>
   );
 }

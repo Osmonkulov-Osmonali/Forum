@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { GeistSans } from 'geist/font/sans'
 import { Analytics } from '@vercel/analytics/next'
 import { Providers } from '@/components/Providers'
+import { CursorTrail } from '@/components/CursorTrail'
 import { Toaster } from 'sonner'
 import './globals.css'
 
@@ -99,6 +100,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${geistSans.variable} font-sans antialiased w-full overflow-x-hidden`}>
         <Providers>
+          <CursorTrail />
           {children}
         </Providers>
         <Toaster richColors closeButton position="bottom-right" />

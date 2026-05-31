@@ -45,31 +45,22 @@ const CONTINENT_LABEL: Record<string, string> = {
   other:  "Другое",
 };
 
-// ─── Placeholder photo ────────────────────────────────────────────────────────
+// ─── Portrait placeholders (Unsplash) ─────────────────────────────────────────
 
-const PHOTO_BG = [
-  "bg-slate-100", "bg-zinc-100", "bg-stone-100", "bg-slate-200",
-  "bg-zinc-200",  "bg-slate-100", "bg-stone-200", "bg-zinc-100",
-];
+const UNSPLASH_PORTRAITS = [
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=256&h=256&fit=crop&crop=faces",
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=256&h=256&fit=crop&crop=faces",
+  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=256&h=256&fit=crop&crop=faces",
+  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=256&h=256&fit=crop&crop=faces",
+  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=256&h=256&fit=crop&crop=faces",
+  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=256&h=256&fit=crop&crop=faces",
+  "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=256&h=256&fit=crop&crop=faces",
+  "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=256&h=256&fit=crop&crop=faces",
+] as const;
 
-function PlaceholderPhoto({ index, large }: { index: number; large?: boolean }) {
-  return (
-    <div className={cn("size-full flex items-center justify-center", PHOTO_BG[index % PHOTO_BG.length])}>
-      <svg
-        viewBox="0 0 48 48"
-        fill="none"
-        className={cn(large ? "size-14" : "size-10", "text-slate-400 opacity-50")}
-      >
-        <circle cx="24" cy="17" r="8" stroke="currentColor" strokeWidth="1.75" />
-        <path
-          d="M8 40c0-8.837 7.163-16 16-16s16 7.163 16 16"
-          stroke="currentColor"
-          strokeWidth="1.75"
-          strokeLinecap="round"
-        />
-      </svg>
-    </div>
-  );
+function speakerPhotoUrl(speaker: Speaker, index: number): string {
+  if (speaker.imageUrl) return speaker.imageUrl;
+  return UNSPLASH_PORTRAITS[index % UNSPLASH_PORTRAITS.length];
 }
 
 // ─── Filter tab row ───────────────────────────────────────────────────────────
@@ -121,10 +112,33 @@ function FilterRow<T extends string>({
   );
 }
 
-// ─── Speaker card ─────────────────────────────────────────────────────────────
+// ─── Table header (desktop) ───────────────────────────────────────────────────
 
-const SpeakerCard = memo(
-  function SpeakerCard({
+function SpeakersTableHead() {
+  return (
+    <div
+      className="
+        hidden border-b border-[#E2E8F0] bg-background-secondary/60
+        md:grid md:grid-cols-[4.5rem_1.4fr_1fr_0.75fr_5rem] md:items-center md:gap-6 md:px-6 md:py-3
+      "
+      aria-hidden
+    >
+      {["", "Спикер", "Должность", "Регион", ""].map((label, i) => (
+        <span
+          key={i}
+          className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground/70"
+        >
+          {label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// ─── Speaker row ──────────────────────────────────────────────────────────────
+
+const SpeakerRow = memo(
+  function SpeakerRow({
     speaker,
     index,
     onClick,
@@ -133,69 +147,87 @@ const SpeakerCard = memo(
     index:   number;
     onClick: () => void;
   }) {
+    const photo = speakerPhotoUrl(speaker, index);
+
     return (
       <motion.div
         layout
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.96 }}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
         transition={{ duration: 0.22, ease: "easeOut" }}
-        whileTap={{ scale: 0.96 }}
       >
         <button
           type="button"
           onClick={onClick}
           aria-label={`Открыть профиль: ${speaker.name}, ${speaker.position}`}
           className="
-            group w-full cursor-pointer bg-background text-left
-            transition-colors duration-150
-            [@media(hover:hover)]:hover:bg-background-secondary
-            active:ring-1 active:ring-accent-secondary/60
+            group flex w-full cursor-pointer items-center gap-4
+            border-b border-[#E2E8F0] bg-background px-4 py-4 text-left
+            transition-colors duration-200 last:border-b-0
+            md:grid md:grid-cols-[4.5rem_1.4fr_1fr_0.75fr_5rem] md:items-center md:gap-6 md:px-6 md:py-5
+            [@media(hover:hover)]:hover:bg-accent-primary/[0.05]
+            active:bg-accent-primary/[0.07]
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-inset
           "
         >
-          {/* Photo */}
-          <div className="relative aspect-square w-full overflow-hidden">
-            {speaker.imageUrl ? (
-              <Image
-                src={speaker.imageUrl}
-                alt={speaker.name}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                className="object-cover"
-              />
-            ) : (
-              <PlaceholderPhoto index={index} />
-            )}
-            {/* Featured star */}
+          <div className="relative size-14 shrink-0 overflow-hidden rounded-full shadow-sm ring-1 ring-[#E2E8F0]/80 transition-shadow duration-200 group-hover:ring-accent-secondary/40 md:size-[4.5rem]">
+            <Image
+              src={photo}
+              alt={speaker.name}
+              fill
+              sizes="(max-width: 768px) 56px, 72px"
+              className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+            />
             {speaker.featured && (
-              <div className="absolute right-2 top-2 flex size-6 items-center justify-center bg-amber-400/90">
-                <svg viewBox="0 0 16 16" fill="currentColor" className="size-3.5 text-white">
-                  <path d="M8 1l1.85 3.74 4.15.6-3 2.93.71 4.13L8 10.5l-3.71 1.9.71-4.13L2 5.34l4.15-.6z"/>
+              <span className="absolute -right-0.5 -top-0.5 flex size-5 items-center justify-center rounded-full bg-amber-400 shadow-sm">
+                <svg viewBox="0 0 16 16" fill="currentColor" className="size-2.5 text-white" aria-hidden>
+                  <path d="M8 1l1.85 3.74 4.15.6-3 2.93.71 4.13L8 10.5l-3.71 1.9.71-4.13L2 5.34l4.15-.6z" />
                 </svg>
-              </div>
+              </span>
             )}
           </div>
 
-          {/* Info */}
-          <div className="border-t border-[#E2E8F0] p-3 sm:p-4">
-            <p className="font-sans text-xs font-semibold leading-snug text-foreground sm:text-sm">
-              {speaker.name}
-            </p>
-            <p className="mt-0.5 font-sans text-[11px] text-muted-foreground sm:text-xs">
-              {speaker.position}
-            </p>
-            {speaker.company && (
-              <p className="mt-0.5 font-sans text-[11px] text-muted-foreground/60 sm:text-xs">
-                {speaker.company}
+          <div className="min-w-0 flex-1 md:contents">
+            <div className="min-w-0 flex-1 md:block">
+              <p className="truncate font-sans text-sm font-semibold text-foreground sm:text-base">
+                {speaker.name}
               </p>
-            )}
-            {speaker.country && (
-              <p className="mt-1 font-sans text-[10px] text-muted-foreground/50">
-                {speaker.country}
+              <p className="mt-0.5 line-clamp-2 font-sans text-xs text-muted-foreground md:hidden">
+                {speaker.position}
+                {speaker.company ? ` · ${speaker.company}` : ""}
               </p>
-            )}
+              {speaker.country && (
+                <p className="mt-0.5 font-sans text-[10px] text-muted-foreground/55 md:hidden">
+                  {speaker.country}
+                </p>
+              )}
+            </div>
+
+            <div className="hidden min-w-0 md:block">
+              <p className="truncate font-sans text-sm text-foreground">{speaker.position}</p>
+              {speaker.company && (
+                <p className="mt-0.5 truncate font-sans text-xs text-muted-foreground/65">
+                  {speaker.company}
+                </p>
+              )}
+            </div>
+
+            <div className="hidden min-w-0 md:block">
+              <p className="truncate font-sans text-sm text-muted-foreground">
+                {speaker.country ?? "—"}
+              </p>
+              {speaker.continent && (
+                <p className="mt-0.5 font-sans text-[10px] uppercase tracking-wide text-muted-foreground/50">
+                  {CONTINENT_LABEL[speaker.continent] ?? speaker.continent}
+                </p>
+              )}
+            </div>
           </div>
+
+          <span className="hidden shrink-0 font-sans text-xs font-medium uppercase tracking-wide text-accent-secondary opacity-0 transition-opacity duration-200 group-hover:opacity-100 md:inline">
+            Профиль →
+          </span>
         </button>
       </motion.div>
     );
@@ -209,13 +241,16 @@ const SpeakerCard = memo(
 
 function SkeletonGrid() {
   return (
-    <div className="grid grid-cols-1 gap-px bg-[#E2E8F0] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="bg-background">
-          <div className="aspect-square w-full animate-pulse bg-slate-100" />
-          <div className="border-t border-[#E2E8F0] p-3 sm:p-4 space-y-2">
-            <div className="h-4 w-28 animate-pulse bg-slate-100" />
-            <div className="h-3 w-24 animate-pulse bg-slate-100" />
+    <div className="overflow-hidden border border-[#E2E8F0]">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div
+          key={i}
+          className="flex items-center gap-4 border-b border-[#E2E8F0] px-4 py-4 last:border-b-0 md:px-6 md:py-5"
+        >
+          <div className="size-14 shrink-0 animate-pulse rounded-full bg-slate-100 md:size-[4.5rem]" />
+          <div className="flex-1 space-y-2">
+            <div className="h-4 w-36 animate-pulse bg-slate-100" />
+            <div className="h-3 w-48 animate-pulse bg-slate-100" />
           </div>
         </div>
       ))}
@@ -305,11 +340,12 @@ export function Speakers({ initialSpeakers }: Props) {
               {filtered.length > 0 ? (
                 <motion.div
                   key="grid"
-                  className="grid grid-cols-1 gap-px bg-[#E2E8F0] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                  className="overflow-hidden border border-[#E2E8F0] bg-background shadow-sm"
                 >
+                  <SpeakersTableHead />
                   <AnimatePresence mode="popLayout">
                     {filtered.map((speaker) => (
-                      <SpeakerCard
+                      <SpeakerRow
                         key={speaker.id}
                         speaker={speaker}
                         index={initialSpeakers.findIndex((s) => s.id === speaker.id)}
@@ -360,17 +396,13 @@ export function Speakers({ initialSpeakers }: Props) {
           <DialogContent className="max-w-sm rounded-none p-0 sm:max-w-md">
             {/* Photo */}
             <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F1F5F9]">
-              {selected.imageUrl ? (
-                <Image
-                  src={selected.imageUrl}
-                  alt={selected.name}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 448px"
-                  className="object-cover"
-                />
-              ) : (
-                <PlaceholderPhoto index={selectedIndex} large />
-              )}
+              <Image
+                src={speakerPhotoUrl(selected, selectedIndex)}
+                alt={selected.name}
+                fill
+                sizes="(max-width: 640px) 100vw, 448px"
+                className="object-cover"
+              />
             </div>
 
             {/* Content */}

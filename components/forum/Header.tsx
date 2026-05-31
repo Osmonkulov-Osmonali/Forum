@@ -11,7 +11,6 @@ const NAV_LINKS = [
   { label: "Спикеры",    href: "#speakers" },
   { label: "Программа",  href: "#schedule" },
   { label: "Билеты",     href: "#tickets" },
-  { label: "Команда",    href: "#team" },
 ];
 
 const MOBILE_NAV_ID = "mobile-nav";

@@ -357,8 +357,9 @@ interface StudentGlobeProps {
 
 export function StudentGlobe({ students, activeId, onSelect, className }: StudentGlobeProps) {
   return (
-    <div className={cn("relative h-full w-full", className)}>
+    <div className={cn("relative h-full w-full bg-transparent", className)}>
       <Canvas
+        className="h-full w-full bg-transparent shadow-none"
         camera={{ position: CAM, fov: 40, near: 0.1, far: 100 }}
         gl={{ antialias: true, alpha: true }}
         dpr={[1, 2]}

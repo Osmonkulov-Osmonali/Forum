@@ -8,7 +8,7 @@ import {
   type Variants,
 } from "framer-motion";
 import { MapPin, Clock, Monitor, ArrowRight } from "lucide-react";
-import { HeroCanvas } from "@/components/forum/HeroCanvas";
+import { HeroGlassDecor } from "@/components/forum/HeroGlassDecor";
 import { cn } from "@/lib/utils";
 import { TICKETON_REGISTRATION_URL } from "@/config/links";
 
@@ -256,26 +256,22 @@ export function Hero() {
         <div className="absolute bottom-0 left-1/2 h-[260px] w-[480px] -translate-x-1/2 rounded-full bg-[#8ECAE6]/15 blur-[80px]" />
       </div>
 
-      {/* ── Canvas: mobile = faint background, desktop = right half ── */}
-      <HeroCanvas
+      {/* ── Mobile: faint glass decor as background ── */}
+      <HeroGlassDecor
         className="
-          pointer-events-none select-none
-          absolute inset-0 z-0
-          opacity-30
-          md:inset-y-0 md:left-[55%] md:right-0 md:opacity-100
+          absolute inset-0 z-0 scale-75 opacity-25
+          md:hidden
         "
       />
 
-      {/* ── Content ── */}
-      <motion.div
-        className="
-          relative z-10 mx-auto w-full max-w-4xl text-center
-          md:mx-0 md:max-w-[60%] md:text-left
-        "
-        variants={container}
-        initial="hidden"
-        animate="show"
-      >
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 md:grid-cols-[1.05fr_0.95fr] md:gap-8 lg:gap-12">
+        {/* ── Content ── */}
+        <motion.div
+          className="text-center md:text-left"
+          variants={container}
+          initial="hidden"
+          animate="show"
+        >
         {/* Eyebrow */}
         <motion.div
           variants={item}
@@ -357,7 +353,16 @@ export function Hero() {
         <motion.div variants={item} className="flex justify-center md:justify-start">
           <MagneticCTA />
         </motion.div>
-      </motion.div>
+        </motion.div>
+
+        {/* ── Desktop: interactive glass spheres ── */}
+        <HeroGlassDecor
+          className="
+            hidden h-[min(68vh,540px)] w-full
+            md:block
+          "
+        />
+      </div>
 
       {/* Bottom divider */}
       <div className="absolute inset-x-0 bottom-0 h-px bg-border" />

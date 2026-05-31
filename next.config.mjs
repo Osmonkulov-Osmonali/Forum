@@ -18,6 +18,7 @@ const nextConfig = {
       { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
       // Placeholder avatars (team photos)
       { protocol: "https", hostname: "i.pravatar.cc" },
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
     // Reasonable device sizes for mobile-first
     deviceSizes: [320, 420, 640, 768, 1080, 1200, 1920],

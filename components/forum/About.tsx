@@ -1,12 +1,87 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   motion,
   useInView,
   useMotionValueEvent,
   useSpring,
+  type Variants,
 } from "framer-motion";
+
+const revealItem: Variants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const letterVariant: Variants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const headingContainer: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.028 } },
+};
+
+function AboutArticle({
+  title,
+  children,
+  staggerDelay = 0,
+}: {
+  title: string;
+  children: ReactNode;
+  staggerDelay?: number;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <motion.article
+      ref={ref}
+      className="space-y-5"
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      variants={{
+        hidden: {},
+        visible: {
+          transition: {
+            staggerChildren: 0.12,
+            delayChildren: staggerDelay,
+          },
+        },
+      }}
+    >
+      <motion.h3
+        variants={headingContainer}
+        className="text-xl font-semibold text-foreground lg:text-2xl"
+      >
+        {title.split("").map((char, i) => (
+          <motion.span
+            key={`${char}-${i}`}
+            variants={letterVariant}
+            className="inline-block"
+          >
+            {char === " " ? "\u00A0" : char}
+          </motion.span>
+        ))}
+      </motion.h3>
+      <motion.div
+        variants={revealItem}
+        className="h-px w-12 origin-left bg-accent-secondary"
+      />
+      <motion.div variants={revealItem}>{children}</motion.div>
+    </motion.article>
+  );
+}
 
 type CounterProps = {
   value: number;
@@ -82,31 +157,26 @@ export function About() {
           </h2>
 
           <div className="grid gap-8 md:gap-16 lg:grid-cols-2 lg:gap-24">
-            <article className="space-y-5">
-              <h3 className="text-xl font-semibold text-foreground lg:text-2xl">
-                Для кого
-              </h3>
-              <div className="h-px w-12 bg-accent-secondary" />
+            <AboutArticle title="Для кого">
               <p className="text-base leading-relaxed text-muted-foreground lg:text-lg">
-                Study free forum — масштабное событие для <strong className="text-foreground font-medium">школьников
-                и студентов 11–19 лет</strong> и их родителей. Мы собираем тех,
-                кто уже думает о своём будущем и хочет поступить в топовые
-                университеты мира: MIT, Oxford, ETH Zurich, NUS и другие.
+                Study free forum — масштабное событие для{" "}
+                <strong className="font-medium text-foreground">
+                  школьников и студентов 11–19 лет
+                </strong>{" "}
+                и их родителей. Мы собираем тех, кто уже думает о своём будущем
+                и хочет поступить в топовые университеты мира: MIT, Oxford, ETH
+                Zurich, NUS и другие.
               </p>
-            </article>
+            </AboutArticle>
 
-            <article className="space-y-5">
-              <h3 className="text-xl font-semibold text-foreground lg:text-2xl">
-                Что внутри
-              </h3>
-              <div className="h-px w-12 bg-accent-secondary" />
+            <AboutArticle title="Что внутри" staggerDelay={0.18}>
               <p className="text-base leading-relaxed text-muted-foreground lg:text-lg">
                 12 спикеров — студенты и выпускники ведущих университетов
                 планеты — поделятся личным опытом поступления, жизни за рубежом
                 и построения карьеры. Практические воркшопы, разбор эссе,
                 нетворкинг и Zoom-трансляция для участников из KG, KZ и UZ.
               </p>
-            </article>
+            </AboutArticle>
           </div>
         </motion.div>
 
