@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  AnimatePresence,
   LayoutGroup,
   motion,
   type Variants,
@@ -90,50 +89,7 @@ function StudentAvatar({
   );
 }
 
-// ─── Shared card sections ───────────────────────────────────────────────────────
-
-function StudentCardExpandedDetails({
-  message,
-  show,
-}: {
-  message: string;
-  show: boolean;
-}) {
-  if (!show) return null;
-
-  return (
-    <p className="mt-3 border-t border-slate-200/70 pt-3 text-sm leading-relaxed text-slate-600">
-      {message}
-    </p>
-  );
-}
-
-function StudentCardCityRow({
-  city,
-  isActive,
-}: {
-  city: string;
-  isActive: boolean;
-}) {
-  return (
-    <motion.div
-      layout
-      className="relative mt-3 flex items-center justify-between border-t border-slate-200/70 pt-3"
-    >
-      <span className="flex items-center gap-1.5 font-sans text-xs text-slate-500">
-        <MapPin className="size-3.5 shrink-0 text-[#8ECAE6]" />
-        {city}
-      </span>
-      {isActive && (
-        <span className="rounded-full bg-[#3B6E8F] px-2.5 py-0.5 font-sans text-[10px] font-medium uppercase tracking-wide text-white">
-          На карте
-        </span>
-      )}
-    </motion.div>
-  );
-}
-
-// ─── Hint panel (fills space beside expanded active card) ────────────────────────
+// ─── Hint panel (shows details for the selected student) ───────────────────────
 
 function StudentHintPanel({ student }: { student: AppStudent }) {
   const km = distanceFromBishkek(student);
@@ -156,6 +112,9 @@ function StudentHintPanel({ student }: { student: AppStudent }) {
           </span>
         </div>
         <p className="text-pretty font-sans text-sm leading-relaxed text-slate-600">
+          {student.message}
+        </p>
+        <p className="mt-2.5 text-pretty font-sans text-xs leading-relaxed text-slate-500">
           {student.tip}
         </p>
       </div>
@@ -191,8 +150,9 @@ function DesktopExpandingCard({
       ref={cardRef}
       data-id={student.id}
       layout
+      animate={{ scale: isActive ? 0.9 : 1, opacity: isActive ? 0.82 : 1 }}
       transition={SPRING}
-      className="min-w-0"
+      className="min-w-0 origin-center"
     >
       <motion.button
         type="button"
@@ -201,49 +161,60 @@ function DesktopExpandingCard({
         whileTap={{ scale: 0.985 }}
         transition={SPRING}
         className={cn(
-          "group/card relative w-full overflow-hidden rounded-2xl border text-left backdrop-blur-md",
+          "group/card relative w-full overflow-hidden rounded-2xl border text-left backdrop-blur-md transition-shadow duration-300",
           isActive
-            ? "border-[#3B6E8F] bg-white/85 p-5 shadow-[0_16px_40px_-16px_rgba(59,110,143,0.45)] ring-1 ring-[#8ECAE6]/80"
+            ? "border-[#3B6E8F]/70 bg-white/60 p-3 shadow-none ring-1 ring-[#8ECAE6]/50"
             : "border-white/60 bg-white/50 p-4 shadow-[0_10px_30px_-20px_rgba(15,23,42,0.3)] hover:border-[#8ECAE6]/70 hover:bg-white/60",
         )}
       >
-        <div
-          aria-hidden
-          className={cn(
-            "pointer-events-none absolute -right-6 -top-8 size-24 rounded-full bg-[#8ECAE6]/30 blur-2xl transition-opacity duration-500",
-            isActive ? "opacity-100" : "opacity-0 group-hover/card:opacity-60",
-          )}
-        />
-
-        <motion.div layout className="relative flex items-center gap-3.5">
+        <motion.div layout className="relative flex items-center gap-3">
           <StudentAvatar
             student={student}
             active={isActive}
-            size={isActive ? "lg" : "md"}
+            size={isActive ? "sm" : "md"}
           />
           <div className="min-w-0 flex-1">
             <p
               className={cn(
-                "truncate font-sans font-semibold text-slate-900 transition-all duration-300",
-                isActive ? "text-base" : "text-sm",
+                "truncate font-sans font-semibold text-slate-900",
+                isActive ? "text-xs" : "text-sm",
               )}
             >
               {student.name}
             </p>
             <p className="mt-0.5 flex items-center gap-1.5 truncate font-sans text-xs text-[#3B6E8F]">
-              <GraduationCap className="size-3.5 shrink-0" />
+              <GraduationCap className="size-3 shrink-0" />
               <span className="truncate">{student.university}</span>
             </p>
+            {!isActive && (
+              <p className="mt-1 flex items-center gap-1 font-sans text-[11px] text-slate-500">
+                <MapPin className="size-3 shrink-0 text-[#8ECAE6]" />
+                {student.city}
+              </p>
+            )}
           </div>
+          {isActive && (
+            <span className="shrink-0 rounded-full bg-[#3B6E8F] px-2 py-0.5 font-sans text-[9px] font-medium uppercase tracking-wide text-white">
+              На карте
+            </span>
+          )}
         </motion.div>
-
-        <StudentCardCityRow city={student.city} isActive={isActive} />
-
-        <StudentCardExpandedDetails message={student.message} show={isActive} />
       </motion.button>
     </motion.div>
   );
 }
+
+// ─── Mobile carousel tokens ─────────────────────────────────────────────────────
+
+/** Fixed slide width — identical for every card so snap/scroll math stays stable. */
+const MOBILE_SLIDE_WIDTH =
+  "w-[calc(100vw-32px)] max-w-[340px] shrink-0 snap-center";
+
+const EXPAND_SPRING = {
+  type: "spring" as const,
+  duration: 0.4,
+  bounce: 0,
+};
 
 // ─── Mobile expanding carousel card ─────────────────────────────────────────────
 
@@ -259,86 +230,67 @@ function MobileExpandingCard({
   cardRef: (el: HTMLDivElement | null) => void;
 }) {
   return (
-    <motion.div
-      ref={cardRef}
-      data-id={student.id}
-      layout
-      animate={{
-        width: isActive ? "min(88vw, 340px)" : "min(72vw, 272px)",
-        scale: isActive ? 1 : 0.94,
-        opacity: isActive ? 1 : 0.72,
-      }}
-      transition={SPRING}
-      className="shrink-0 snap-center"
-    >
-      <motion.button
+    <div ref={cardRef} data-id={student.id} className={MOBILE_SLIDE_WIDTH}>
+      <button
         type="button"
-        layout
         onClick={() => onSelect(student.id)}
-        whileTap={{ scale: 0.985 }}
-        transition={SPRING}
         className={cn(
-          "relative w-full overflow-hidden rounded-2xl border text-left backdrop-blur-md",
+          "w-full rounded-2xl border text-left backdrop-blur-md transition-colors duration-300",
           isActive
-            ? "border-[#3B6E8F] bg-white/85 p-5 shadow-[0_16px_40px_-16px_rgba(59,110,143,0.45)] ring-1 ring-[#8ECAE6]/80"
+            ? "border-[#3B6E8F] bg-white/85 p-4 shadow-[0_12px_32px_-14px_rgba(59,110,143,0.35)] ring-1 ring-[#8ECAE6]/70"
             : "border-white/60 bg-white/50 p-4 shadow-[0_8px_24px_-18px_rgba(15,23,42,0.25)]",
         )}
       >
-        <div
-          aria-hidden
-          className={cn(
-            "pointer-events-none absolute -right-8 -top-10 size-28 rounded-full bg-[#8ECAE6]/25 blur-2xl transition-opacity duration-500",
-            isActive ? "opacity-100" : "opacity-0",
-          )}
-        />
-
-        <motion.div layout className="relative flex items-center gap-3.5">
-          <StudentAvatar
-            student={student}
-            active={isActive}
-            size={isActive ? "lg" : "md"}
-          />
+        <div className="relative flex items-start gap-3">
+          <StudentAvatar student={student} active={isActive} size="md" />
           <div className="min-w-0 flex-1">
-            <p
-              className={cn(
-                "truncate font-sans font-semibold text-slate-900 transition-all duration-300",
-                isActive ? "text-base" : "text-sm",
-              )}
-            >
+            <p className="break-words font-sans text-sm font-semibold leading-snug text-slate-900 whitespace-normal">
               {student.name}
             </p>
-            <p className="mt-0.5 flex items-center gap-1.5 truncate font-sans text-xs text-[#3B6E8F]">
-              <GraduationCap className="size-3.5 shrink-0" />
-              <span className="truncate">{student.university}</span>
+            <p className="mt-0.5 flex items-start gap-1.5 font-sans text-xs leading-snug text-[#3B6E8F]">
+              <GraduationCap className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+              <span className="min-w-0 break-words whitespace-normal">
+                {student.university}
+              </span>
+            </p>
+            <p className="mt-1 flex items-start gap-1 font-sans text-[11px] leading-snug text-slate-500">
+              <MapPin className="mt-0.5 size-3 shrink-0 text-[#8ECAE6]" aria-hidden />
+              <span className="break-words whitespace-normal">{student.city}</span>
             </p>
           </div>
-        </motion.div>
-
-        <StudentCardCityRow city={student.city} isActive={isActive} />
-
-        <StudentCardExpandedDetails message={student.message} show={isActive} />
-
-        <AnimatePresence initial={false}>
           {isActive && (
-            <motion.div
-              key="mobile-tip"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={SPRING}
-              className="overflow-hidden"
-            >
-              <div className="mt-3 flex items-start gap-2 rounded-xl border border-dashed border-[#8ECAE6]/40 bg-[#8ECAE6]/8 px-3 py-2.5">
-                <Lightbulb className="mt-0.5 size-3.5 shrink-0 text-[#3B6E8F]" aria-hidden />
-                <p className="text-pretty font-sans text-xs leading-relaxed text-slate-600">
-                  {student.tip}
-                </p>
-              </div>
-            </motion.div>
+            <span className="shrink-0 rounded-full bg-[#3B6E8F] px-2 py-0.5 font-sans text-[9px] font-medium uppercase tracking-wide text-white">
+              На карте
+            </span>
           )}
-        </AnimatePresence>
-      </motion.button>
-    </motion.div>
+        </div>
+
+        <motion.div
+          initial={false}
+          animate={{
+            height: isActive ? "auto" : 0,
+            opacity: isActive ? 1 : 0,
+          }}
+          transition={EXPAND_SPRING}
+          className="overflow-hidden"
+        >
+          <div className="mt-3 space-y-3 border-t border-slate-200/70 pt-3">
+            <p className="break-words font-sans text-sm leading-relaxed text-slate-600 whitespace-normal">
+              {student.message}
+            </p>
+            <div className="flex items-start gap-2 rounded-xl border border-dashed border-[#8ECAE6]/40 bg-[#8ECAE6]/8 px-3 py-2.5">
+              <Lightbulb
+                className="mt-0.5 size-3.5 shrink-0 text-[#3B6E8F]"
+                aria-hidden
+              />
+              <p className="min-w-0 break-words font-sans text-xs leading-relaxed text-slate-600 whitespace-normal">
+                {student.tip}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </button>
+    </div>
   );
 }
 
@@ -370,15 +322,8 @@ function MobileStudentCarousel({
     if (!root || !el) return;
 
     isProgrammaticScroll.current = true;
-    const rootRect = root.getBoundingClientRect();
-    const elRect = el.getBoundingClientRect();
-    const delta =
-      elRect.left -
-      rootRect.left -
-      (rootRect.width - elRect.width) / 2 +
-      root.scrollLeft;
-
-    root.scrollTo({ left: delta, behavior: smooth ? "smooth" : "auto" });
+    const target = el.offsetLeft - (root.clientWidth - el.offsetWidth) / 2;
+    root.scrollTo({ left: Math.max(0, target), behavior: smooth ? "smooth" : "auto" });
 
     window.setTimeout(() => {
       isProgrammaticScroll.current = false;
@@ -446,30 +391,47 @@ function MobileStudentCarousel({
     scrollToStudent(activeId);
   }, [activeId, scrollToStudent]);
 
+  // Re-center when the active card grows/shrinks (expanded description)
+  useEffect(() => {
+    if (!activeId) return;
+    const el = cardRefs.current[activeId];
+    const root = containerRef.current;
+    if (!el || !root) return;
+
+    const recenter = () => {
+      const target = el.offsetLeft - (root.clientWidth - el.offsetWidth) / 2;
+      root.scrollTo({ left: Math.max(0, target), behavior: "auto" });
+    };
+
+    const ro = new ResizeObserver(() => {
+      requestAnimationFrame(recenter);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [activeId]);
+
   return (
     <div className="md:hidden">
-      <LayoutGroup id="student-carousel">
-        <div
-          ref={containerRef}
-          className="
-            flex items-start gap-3 overflow-x-auto overscroll-x-contain
-            scroll-px-[6vw] px-[6vw] pb-2
-            snap-x snap-mandatory scrollbar-hide
-          "
-        >
-          {students.map((student) => (
-            <MobileExpandingCard
-              key={student.id}
-              student={student}
-              isActive={student.id === activeId}
-              onSelect={selectExternal}
-              cardRef={(el) => {
-                cardRefs.current[student.id] = el;
-              }}
-            />
-          ))}
-        </div>
-      </LayoutGroup>
+      <div
+        ref={containerRef}
+        className="
+          flex items-start gap-3 overflow-x-auto overflow-y-visible
+          overscroll-x-contain scroll-px-4 px-4 pb-2
+          snap-x snap-mandatory scrollbar-hide
+        "
+      >
+        {students.map((student) => (
+          <MobileExpandingCard
+            key={student.id}
+            student={student}
+            isActive={student.id === activeId}
+            onSelect={selectExternal}
+            cardRef={(el) => {
+              cardRefs.current[student.id] = el;
+            }}
+          />
+        ))}
+      </div>
 
       <div className="mt-4 flex items-center justify-center gap-3 px-4">
         <div className="flex items-center gap-1.5">
@@ -511,17 +473,13 @@ function DesktopStudentGrid({
   onSelect: (id: string) => void;
 }) {
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const activeStudent = students.find((s) => s.id === activeId) ?? null;
 
   useEffect(() => {
     if (!activeId) return;
     const el = cardRefs.current[activeId];
     el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [activeId]);
-
-  const rows: (AppStudent | null)[][] = [];
-  for (let i = 0; i < students.length; i += 2) {
-    rows.push([students[i] ?? null, students[i + 1] ?? null]);
-  }
 
   return (
     <LayoutGroup id="student-desktop-grid">
@@ -530,102 +488,23 @@ function DesktopStudentGrid({
         initial={false}
         whileInView="show"
         viewport={{ once: true, margin: "-100px" }}
-        className="hidden flex-col gap-4 md:flex"
+        className="hidden md:flex md:flex-col md:gap-4"
       >
-        {rows.map(([left, right], rowIndex) => {
-          const activeLeft = left?.id === activeId;
-          const activeRight = right?.id === activeId;
-          const activeInRow = activeLeft ? left : activeRight ? right : null;
+        <div className="grid grid-cols-2 gap-4">
+          {students.map((student) => (
+            <DesktopExpandingCard
+              key={student.id}
+              student={student}
+              isActive={student.id === activeId}
+              onSelect={onSelect}
+              cardRef={(el) => {
+                cardRefs.current[student.id] = el;
+              }}
+            />
+          ))}
+        </div>
 
-          if (activeInRow) {
-            const activeOnLeft = activeLeft;
-            const neighbor = activeOnLeft ? right : left;
-
-            return (
-              <div
-                key={`row-${rowIndex}`}
-                className="grid grid-cols-2 items-start gap-4"
-              >
-                {activeOnLeft ? (
-                  <>
-                    <DesktopExpandingCard
-                      student={left!}
-                      isActive
-                      onSelect={onSelect}
-                      cardRef={(el) => {
-                        cardRefs.current[left!.id] = el;
-                      }}
-                    />
-                    <div className="flex min-h-full flex-col gap-4">
-                      {neighbor && (
-                        <DesktopExpandingCard
-                          student={neighbor}
-                          isActive={false}
-                          onSelect={onSelect}
-                          cardRef={(el) => {
-                            cardRefs.current[neighbor.id] = el;
-                          }}
-                        />
-                      )}
-                      <StudentHintPanel key={activeInRow.id} student={activeInRow} />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex min-h-full flex-col gap-4">
-                      {neighbor && (
-                        <DesktopExpandingCard
-                          student={neighbor}
-                          isActive={false}
-                          onSelect={onSelect}
-                          cardRef={(el) => {
-                            cardRefs.current[neighbor.id] = el;
-                          }}
-                        />
-                      )}
-                      <StudentHintPanel key={activeInRow.id} student={activeInRow} />
-                    </div>
-                    <DesktopExpandingCard
-                      student={right!}
-                      isActive
-                      onSelect={onSelect}
-                      cardRef={(el) => {
-                        cardRefs.current[right!.id] = el;
-                      }}
-                    />
-                  </>
-                )}
-              </div>
-            );
-          }
-
-          return (
-            <div key={`row-${rowIndex}`} className="grid grid-cols-2 gap-4">
-              {left && (
-                <DesktopExpandingCard
-                  student={left}
-                  isActive={false}
-                  onSelect={onSelect}
-                  cardRef={(el) => {
-                    cardRefs.current[left.id] = el;
-                  }}
-                />
-              )}
-              {right ? (
-                <DesktopExpandingCard
-                  student={right}
-                  isActive={false}
-                  onSelect={onSelect}
-                  cardRef={(el) => {
-                    cardRefs.current[right.id] = el;
-                  }}
-                />
-              ) : (
-                <div aria-hidden />
-              )}
-            </div>
-          );
-        })}
+        {activeStudent && <StudentHintPanel student={activeStudent} />}
       </motion.div>
     </LayoutGroup>
   );

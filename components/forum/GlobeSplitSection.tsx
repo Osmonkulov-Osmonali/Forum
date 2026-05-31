@@ -55,11 +55,8 @@ function useIsDesktopTooltip() {
  *
  * Controlled split section: one `selectedStudentId` drives both the 3-D globe
  * and the student list.
- *   • list swipe / tap → globe rotates toward `coordinates`, arc animates
- *   • marker click     → list highlights and centers the matching card
- *
- * Desktop (md+): compact globe badge + expanding cards in the right grid.
- * Mobile (<md):  expanding carousel — active card grows inline.
+ *   • list tap → highlights marker + arc; card shrinks compact
+ *   • drag globe → manual orbit via OrbitControls
  */
 export function GlobeSplitSection() {
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
@@ -99,8 +96,9 @@ export function GlobeSplitSection() {
             </span>
           </h2>
           <p className="mt-4 max-w-xl text-pretty text-base text-slate-500 sm:text-lg">
-            Выбери студента — глобус развернётся к его городу и прочертит путь из
-            Бишкека. Подробности раскрываются прямо в карточке справа.
+            Выбери студента — на глобусе подсветится его город и путь из Бишкека.
+            Вращай глобус мышью или пальцем, а карточка выбранного студента станет
+            компактнее.
           </p>
         </motion.div>
 

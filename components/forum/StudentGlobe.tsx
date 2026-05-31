@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { AdaptiveDpr, AdaptiveEvents, Line } from "@react-three/drei";
+import { AdaptiveDpr, AdaptiveEvents, Line, OrbitControls } from "@react-three/drei";
 import { AnimatePresence, motion } from "framer-motion";
 import { GraduationCap, MapPin, Route } from "lucide-react";
 import * as THREE from "three";
@@ -24,11 +24,8 @@ const C_HALO = "#A2D2FF";
 const COASTLINE_URL =
   "https://raw.githubusercontent.com/martynafford/natural-earth-geojson/master/110m/physical/ne_110m_coastline.json";
 
-// Camera sits slightly above the equator; the point that ends up facing it is
-// `FRONT_DIR` (camera position, normalized). We rotate the globe so the active
-// student's coordinates align with FRONT_DIR.
+// Camera sits slightly above the equator.
 const CAM: [number, number, number] = [0, 0.35, 2.85];
-const FRONT_DIR = new THREE.Vector3(...CAM).normalize();
 
 // ─── Geo helpers ────────────────────────────────────────────────────────────────
 
@@ -355,32 +352,13 @@ function GlobeGroup({
   activeId: string | null;
   onSelect: (id: string) => void;
 }) {
-  const groupRef = useRef<THREE.Group>(null);
-  const targetQuat = useRef(new THREE.Quaternion());
-
   const active = useMemo(
     () => students.find((s) => s.id === activeId) ?? null,
     [students, activeId],
   );
 
-  useFrame((_, delta) => {
-    const g = groupRef.current;
-    if (!g) return;
-
-    if (active) {
-      const { lat, lon } = studentLatLon(active);
-      const dir = latLonToVec3(lat, lon, 1).normalize();
-      targetQuat.current.setFromUnitVectors(dir, FRONT_DIR);
-      // Frame-rate-independent smoothing toward the target orientation.
-      const t = 1 - Math.pow(0.0016, delta);
-      g.quaternion.slerp(targetQuat.current, t);
-    } else {
-      g.rotateY(delta * 0.07); // gentle idle spin
-    }
-  });
-
   return (
-    <group ref={groupRef}>
+    <group>
       <GlobeMesh />
       <Graticule />
       <Continents />
@@ -445,8 +423,7 @@ export function StudentGlobe({
         gl={{ antialias: true, alpha: true }}
         dpr={[1, 2]}
         onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
-        // Transparent background; let vertical scroll/touch pass straight through.
-        style={{ background: "transparent", touchAction: "pan-y" }}
+        style={{ background: "transparent", touchAction: "none" }}
       >
         <AdaptiveDpr pixelated />
         <AdaptiveEvents />
@@ -461,6 +438,17 @@ export function StudentGlobe({
           students={students}
           activeId={activeId}
           onSelect={onSelect}
+        />
+
+        <OrbitControls
+          enableZoom={false}
+          enablePan={false}
+          enableRotate
+          autoRotate={false}
+          enableDamping
+          dampingFactor={0.08}
+          rotateSpeed={0.65}
+          makeDefault
         />
       </Canvas>
 
