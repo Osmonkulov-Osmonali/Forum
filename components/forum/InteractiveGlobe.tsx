@@ -664,10 +664,11 @@ export function InteractiveGlobe() {
           const hubId = CATEGORY_HUB_MAP[cat];
           const isActive = activeHub?.id === hubId;
           return (
-            <button
+            <motion.button
               key={cat}
               type="button"
               onClick={() => handleCategoryClick(cat)}
+              whileTap={{ scale: 0.96 }}
               className={cn(
                 "h-9 min-h-[2.25rem] rounded-full px-4 font-sans text-xs font-medium transition-all duration-200",
                 isActive
@@ -676,7 +677,7 @@ export function InteractiveGlobe() {
               )}
             >
               {cat}
-            </button>
+            </motion.button>
           );
         })}
         {/* Mobile hub buttons in pill row */}
@@ -684,10 +685,11 @@ export function InteractiveGlobe() {
           {nonSource.map((hub) => {
             const isActive = activeHub?.id === hub.id;
             return (
-              <button
+              <motion.button
                 key={hub.id}
                 type="button"
                 onClick={() => activateHub(hub)}
+                whileTap={{ scale: 0.96 }}
                 className={cn(
                   "h-8 shrink-0 rounded-full px-3 font-sans text-[11px] font-medium transition-all",
                   isActive
@@ -696,7 +698,7 @@ export function InteractiveGlobe() {
                 )}
               >
                 {hub.name}
-              </button>
+              </motion.button>
             );
           })}
         </div>

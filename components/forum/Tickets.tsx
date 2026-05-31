@@ -148,7 +148,7 @@ export function Tickets() {
                     {tier.name}
                   </p>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="font-sans text-4xl font-semibold tracking-tight text-foreground lg:text-5xl">
+                    <span className="font-sans text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
                       {tier.price.toLocaleString("ru-RU")}
                     </span>
                     <span className="font-sans text-xl font-medium text-foreground">

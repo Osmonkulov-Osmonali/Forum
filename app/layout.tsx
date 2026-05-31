@@ -21,12 +21,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
-  title: 'Grant Circle Central Asia — Lead+ Youth Academy',
+  title: 'Study free forum — Lead+ Youth Academy',
   description:
     'Масштабное событие для школьников и студентов 11–19 лет о поступлении в топовые университеты мира. Technopark, Bishkek. Offline & Zoom Stream.',
   keywords: [
     'грант', 'стипендия', 'университет', 'поступление за рубеж',
-    'Bishkek', 'Central Asia', 'Lead+ Youth Academy', 'Grant Circle',
+    'Bishkek', 'Central Asia', 'Lead+ Youth Academy', 'Study free forum',
   ],
   authors: [{ name: 'Lead+ Youth Academy' }],
   robots: { index: true, follow: true },
@@ -34,14 +34,14 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'ru_RU',
     url: SITE_URL,
-    siteName: 'Grant Circle Central Asia',
-    title: 'Grant Circle Central Asia — Lead+ Youth Academy',
+    siteName: 'Study free forum',
+    title: 'Study free forum — Lead+ Youth Academy',
     description:
       'Масштабное событие для школьников и студентов 11–19 лет о поступлении в топовые университеты мира.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Grant Circle Central Asia — Lead+ Youth Academy',
+    title: 'Study free forum — Lead+ Youth Academy',
     description:
       'Масштабное событие для школьников и студентов 11–19 лет о поступлении в топовые университеты мира.',
   },
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Event',
-  name: 'Grant Circle Central Asia',
+  name: 'Study free forum',
   description:
     'Масштабное событие для школьников и студентов 11–19 лет о поступлении в топовые университеты мира. Technopark, Bishkek.',
   startDate: '2026-09-01T12:00:00+06:00',
@@ -90,14 +90,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ru" className="bg-background">
+    <html lang="ru" className="w-full overflow-x-hidden bg-background">
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${geistSans.variable} font-sans antialiased overflow-x-hidden`}>
+      <body className={`${inter.variable} ${geistSans.variable} font-sans antialiased w-full overflow-x-hidden`}>
         <Providers>
           {children}
         </Providers>

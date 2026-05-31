@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { TICKETON_REGISTRATION_URL } from "@/config/links";
 
@@ -15,6 +15,38 @@ const NAV_LINKS = [
 ];
 
 const MOBILE_NAV_ID = "mobile-nav";
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Mobile drawer animation — slides down from the top with a soft spring,
+   then staggers the links/CTA into view.
+   ────────────────────────────────────────────────────────────────────────── */
+
+const drawerVariants: Variants = {
+  hidden: { y: "-100%" },
+  visible: {
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+      staggerChildren: 0.07,
+      delayChildren: 0.12,
+    },
+  },
+  exit: {
+    y: "-100%",
+    transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+  },
+};
+
+const drawerItemVariants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 220, damping: 22 },
+  },
+};
 
 export function Header() {
   const [scrolled,  setScrolled]  = useState(false);
@@ -33,6 +65,16 @@ export function Header() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  // Lock background scroll while the full-screen mobile drawer is open
+  useEffect(() => {
+    if (!menuOpen) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [menuOpen]);
 
   // Close menu and let the browser follow the anchor
   function handleNavClick() {
@@ -60,9 +102,9 @@ export function Header() {
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2
               md:text-lg
             "
-            aria-label="Grant Circle Central Asia — главная"
+            aria-label="Study free forum — главная"
           >
-            Grant Circle Central Asia
+            Study free forum
           </a>
 
           {/* Desktop nav */}
@@ -85,10 +127,11 @@ export function Header() {
           {/* Right side */}
           <div className="flex items-center gap-3">
             {/* CTA — external Ticketon registration, hidden on xs, shown sm+ */}
-            <a
+            <motion.a
               href={TICKETON_REGISTRATION_URL}
               target="_blank"
               rel="noopener noreferrer"
+              whileTap={{ scale: 0.96 }}
               className="
                 hidden sm:inline-flex items-center
                 border border-foreground px-4 py-1.5 text-xs font-medium text-foreground
@@ -100,15 +143,16 @@ export function Header() {
               "
             >
               Регистрация
-            </a>
+            </motion.a>
 
             {/* Hamburger — mobile only */}
-            <button
+            <motion.button
               type="button"
               aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
               aria-expanded={menuOpen}
               aria-controls={MOBILE_NAV_ID}
               onClick={() => setMenuOpen((o) => !o)}
+              whileTap={{ scale: 0.96 }}
               className="
                 flex md:hidden items-center justify-center rounded-sm p-2 text-foreground
                 transition-colors
@@ -116,45 +160,69 @@ export function Header() {
               "
             >
               {menuOpen ? <X className="size-5" aria-hidden /> : <Menu className="size-5" aria-hidden />}
-            </button>
+            </motion.button>
           </div>
         </div>
 
-        {/* Mobile dropdown */}
-        <AnimatePresence>
-          {menuOpen && (
-            <motion.nav
-              id={MOBILE_NAV_ID}
-              key="mobile-menu"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-              className="overflow-hidden border-t border-[#E2E8F0] bg-white/95 backdrop-blur-md md:hidden"
-              aria-label="Мобильное меню"
-            >
-              <ul className="flex flex-col px-4 py-4" role="list">
-                {NAV_LINKS.map(({ label, href }) => (
-                  <li key={href}>
-                    <a
-                      href={href}
-                      onClick={handleNavClick}
-                      className="
-                        flex min-h-12 items-center py-3 text-base font-medium text-foreground
-                        transition-colors
-                        [@media(hover:hover)]:hover:text-accent-primary
-                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:rounded-sm
-                      "
-                    >
-                      {label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </motion.nav>
-          )}
-        </AnimatePresence>
       </header>
+
+      {/* Mobile drawer — slides down from the top on a soft spring */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.nav
+            id={MOBILE_NAV_ID}
+            key="mobile-menu"
+            variants={drawerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="
+              fixed inset-x-0 top-0 z-40 flex h-[100dvh] flex-col
+              bg-white/98 px-4 pb-10 pt-20 backdrop-blur-xl md:hidden
+            "
+            aria-label="Мобильное меню"
+          >
+            <ul className="flex flex-col" role="list">
+              {NAV_LINKS.map(({ label, href }) => (
+                <motion.li key={href} variants={drawerItemVariants}>
+                  <motion.a
+                    href={href}
+                    onClick={handleNavClick}
+                    whileTap={{ scale: 0.96 }}
+                    className="
+                      flex min-h-14 items-center border-b border-[#E2E8F0]/70 py-3
+                      font-heading text-2xl font-semibold tracking-tight text-foreground-dark
+                      transition-colors
+                      [@media(hover:hover)]:hover:text-accent-primary
+                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:rounded-sm
+                    "
+                  >
+                    {label}
+                  </motion.a>
+                </motion.li>
+              ))}
+            </ul>
+
+            {/* CTA pinned to the bottom of the drawer */}
+            <motion.a
+              variants={drawerItemVariants}
+              href={TICKETON_REGISTRATION_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleNavClick}
+              whileTap={{ scale: 0.96 }}
+              className="
+                mt-auto inline-flex min-h-14 w-full items-center justify-center gap-2
+                rounded-full bg-[#0F172A] px-6 text-base font-semibold text-white
+                shadow-[0_18px_40px_-18px_rgba(15,23,42,0.55)]
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2
+              "
+            >
+              Регистрация
+            </motion.a>
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </>
   );
 }

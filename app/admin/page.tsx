@@ -138,7 +138,7 @@ export default function AdminPage() {
               <Users className="size-4 text-[#8ECAE6]" aria-hidden />
             </div>
             <div>
-              <p className="font-sans text-xs text-[#94A3B8]">Grant Circle Central Asia</p>
+              <p className="font-sans text-xs text-[#94A3B8]">Study free forum</p>
               <h1 className="font-sans text-sm font-semibold text-[#0F172A]">
                 Управление спикерами
               </h1>

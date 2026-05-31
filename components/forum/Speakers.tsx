@@ -95,10 +95,11 @@ function FilterRow<T extends string>({
       "
     >
       {options.map((opt) => (
-        <button
+        <motion.button
           key={opt.value}
           type="button"
           onClick={() => onChange(opt.value)}
+          whileTap={{ scale: 0.96 }}
           className={cn(
             "relative shrink-0 px-4 py-3 font-sans text-xs font-medium transition-colors duration-150 sm:px-5 sm:py-2.5 sm:text-sm",
             value === opt.value
@@ -114,7 +115,7 @@ function FilterRow<T extends string>({
               transition={{ duration: 0.2, ease: "easeInOut" }}
             />
           )}
-        </button>
+        </motion.button>
       ))}
     </div>
   );
@@ -139,7 +140,7 @@ const SpeakerCard = memo(
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
         transition={{ duration: 0.22, ease: "easeOut" }}
-        whileTap={{ scale: 0.98 }}
+        whileTap={{ scale: 0.96 }}
       >
         <button
           type="button"

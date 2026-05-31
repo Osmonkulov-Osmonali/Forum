@@ -1,9 +1,29 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { MapPin, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// ─── Scroll-in stagger variants ────────────────────────────────────────────────
+
+const listGridVariants: Variants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const listCardVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 100, damping: 20 },
+  },
+};
 
 // ─── Types & data ──────────────────────────────────────────────────────────────
 
@@ -43,11 +63,14 @@ interface CardProps {
 
 function StudentCard({ student, active, onSelect, cardRef }: CardProps) {
   return (
-    <button
+    <motion.button
       ref={cardRef}
       data-id={student.id}
       type="button"
+      variants={listCardVariants}
       onClick={() => onSelect(student.id)}
+      whileTap={{ scale: 0.96 }}
+      transition={{ type: "spring", stiffness: 400, damping: 28 }}
       className={cn(
         "group/card relative shrink-0 snap-center text-left",
         "w-[85%] md:w-auto",
@@ -103,7 +126,7 @@ function StudentCard({ student, active, onSelect, cardRef }: CardProps) {
           </motion.span>
         )}
       </div>
-    </button>
+    </motion.button>
   );
 }
 
@@ -171,8 +194,12 @@ export function StudentList({ students, activeId, onSelect }: StudentListProps) 
   }, [activeId]);
 
   return (
-    <div
+    <motion.div
       ref={containerRef}
+      variants={listGridVariants}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "-100px" }}
       className="
         flex flex-row gap-4 overflow-x-auto scroll-px-[7.5%] px-[7.5%] pb-3
         snap-x snap-mandatory scrollbar-hide
@@ -190,6 +217,6 @@ export function StudentList({ students, activeId, onSelect }: StudentListProps) 
           }}
         />
       ))}
-    </div>
+    </motion.div>
   );
 }

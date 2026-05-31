@@ -38,6 +38,24 @@ const item: Variants = {
   },
 };
 
+const bentoGridVariants: Variants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const bentoCardVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 100, damping: 20 },
+  },
+};
+
 /* ──────────────────────────────────────────────────────────────────────────
    Data
    ────────────────────────────────────────────────────────────────────────── */
@@ -107,7 +125,7 @@ function MagneticCTA() {
       onPointerMove={handlePointerMove}
       onPointerLeave={reset}
       style={{ x: springX, y: springY }}
-      whileTap={{ scale: 0.97 }}
+      whileTap={{ scale: 0.96 }}
       className="
         group relative inline-flex w-full items-center justify-center gap-2.5
         overflow-hidden rounded-full
@@ -199,7 +217,8 @@ function StatCard({
   className?: string;
 }) {
   return (
-    <div
+    <motion.div
+      variants={bentoCardVariants}
       className={cn(
         "group/stat relative flex flex-col justify-between overflow-hidden rounded-2xl",
         "border border-white/60 bg-white/40 p-4 backdrop-blur-md sm:p-5",
@@ -219,7 +238,7 @@ function StatCard({
         <p className="text-sm font-semibold text-foreground">{label}</p>
         <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -274,14 +293,11 @@ export function Hero() {
         {/* Main heading — large, asymmetric, gradient keywords */}
         <motion.h1
           variants={item}
-          className="mb-6 font-heading text-[clamp(2.8rem,11vw,7.5rem)] font-semibold leading-[0.95] tracking-[-0.03em] text-foreground-dark"
+          className="mb-6 font-heading text-[clamp(2.4rem,9vw,6.5rem)] font-semibold leading-[0.95] tracking-[-0.03em] text-balance text-foreground-dark"
         >
-          <span className="block">Grant</span>
-          <span className="block bg-gradient-to-r from-[#0F172A] via-[#3B6E8F] to-[#8ECAE6] bg-clip-text pb-2 text-transparent md:ml-[0.6em]">
-            Circle
-          </span>
-          <span className="block text-[0.46em] font-medium uppercase tracking-[0.32em] text-muted-foreground md:ml-[0.1em]">
-            Central&nbsp;Asia
+          <span className="block">Study</span>
+          <span className="block bg-gradient-to-r from-[#0F172A] via-[#3B6E8F] to-[#8ECAE6] bg-clip-text pb-2 text-transparent">
+            free&nbsp;forum
           </span>
         </motion.h1>
 
@@ -294,9 +310,12 @@ export function Hero() {
           всё о поступлении в топовые университеты мира.
         </motion.p>
 
-        {/* Bento stat cards */}
+        {/* Bento stat cards — cascade on scroll into view */}
         <motion.div
-          variants={item}
+          variants={bentoGridVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
           className="mb-9 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4"
         >
           {STATS.map((stat, i) => (

@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
             <Lock className="size-5 text-[#8ECAE6]" />
           </div>
           <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#8ECAE6]">
-            Grant Circle Central Asia
+            Study free forum
           </p>
           <h1 className="mt-1 font-sans text-2xl font-semibold tracking-tight text-[#0F172A]">
             Панель управления

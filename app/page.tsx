@@ -114,7 +114,7 @@ export default function ForumLanding() {
       <SmoothScroll />
       <Header />
 
-      <main id="main-content" className="overflow-x-hidden">
+      <main id="main-content" className="w-full overflow-x-hidden">
         {/* Above-fold — statically imported, renders immediately */}
         <Hero />
 
