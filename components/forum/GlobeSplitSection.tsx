@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import dynamic from "next/dynamic";
-import { StudentListPlaceholder } from "@/components/StudentListPlaceholder";
+import { motion } from "framer-motion";
+import { STUDENTS } from "@/components/forum/StudentList";
+import { StudentList } from "@/components/forum/StudentList";
 
 // ─── Globe loading skeleton ───────────────────────────────────────────────────
 
@@ -11,17 +14,17 @@ function GlobeSkeleton() {
       className="flex h-full w-full items-center justify-center bg-gradient-to-b from-[#F8FAFC] to-[#EFF6FB]"
       aria-hidden
     >
-      <div className="size-[240px] animate-pulse rounded-full bg-[#8ECAE6]/15 md:size-[380px]" />
+      <div className="size-[200px] animate-pulse rounded-full bg-[#8ECAE6]/15 md:size-[340px]" />
     </div>
   );
 }
 
-// ─── Dynamic Globe import (ssr:false required — Three.js) ────────────────────
+// ─── Dynamic globe import (ssr:false — Three.js touches browser APIs) ──────────
 
-const GlobeEmbed = dynamic(
+const StudentGlobe = dynamic(
   () =>
-    import("@/components/forum/InteractiveGlobe").then((m) => ({
-      default: m.InteractiveGlobe,
+    import("@/components/forum/StudentGlobe").then((m) => ({
+      default: m.StudentGlobe,
     })),
   {
     ssr: false,
@@ -34,51 +37,74 @@ const GlobeEmbed = dynamic(
 /**
  * GlobeSplitSection
  *
- * Desktop (md+):  Two-column sticky split.
- *   Left  — light Three.js globe (transparent canvas), sticky so it stays in
- *            view while the right column scrolls.
- *   Right — white scrollable student list with continent filters.
+ * Light, premium split section that wires the controlled 3-D globe to a
+ * student list. A single `activeId` state is shared both ways:
+ *   • list click / mobile swipe → globe rotates (lerp) toward the student's
+ *     coordinates and draws an animated Bishkek → city arc.
+ *   • globe marker click        → list highlights and (mobile) snaps the card
+ *     into view.
  *
- * Mobile:  Vertical stack — globe (h-[50vh]) followed by the student list.
+ * Desktop (md+): grid md:grid-cols-2 h-[85vh] — globe left, list right.
+ * Mobile:        flex-col — globe sticky on top at 40vh, list (swipe carousel)
+ *                below.
  */
 export function GlobeSplitSection() {
+  const [activeId, setActiveId] = useState<string | null>(STUDENTS[0]?.id ?? null);
+
   return (
     <section
       id="globe-students"
       aria-label="Интерактивный глобус и список студентов"
       className="bg-white"
     >
-      {/* ── Desktop layout: sticky split ── */}
-      <div className="hidden md:flex">
-        {/* Left column — sticky globe (light premium backdrop) */}
-        <div
-          className="sticky top-0 h-[90vh] w-1/2 shrink-0 overflow-hidden bg-gradient-to-b from-[#F8FAFC] via-white to-[#EFF6FB]"
-          aria-hidden="false"
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-20 lg:py-24">
+        {/* ── Header (dark, Hero-style) ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+          className="mb-10 md:mb-14"
         >
-          {/*
-            InteractiveGlobe renders a <section> with a fixed-height canvas
-            (640px on desktop). We let it overflow naturally inside the dark
-            container; the sticky wrapper clips anything that exceeds 90vh.
-          */}
-          <GlobeEmbed />
-        </div>
+          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/60 px-3.5 py-1.5 text-xs font-medium uppercase tracking-[0.18em] text-[#3B6E8F] backdrop-blur-md">
+            <span className="size-1.5 rounded-full bg-[#8ECAE6]" />
+            Карта выпускников
+          </span>
+          <h2 className="max-w-2xl font-heading text-3xl font-semibold leading-[1.05] tracking-tight text-foreground-dark sm:text-4xl lg:text-5xl">
+            Наши студенты учатся{" "}
+            <span className="bg-gradient-to-r from-[#0F172A] to-[#8ECAE6] bg-clip-text text-transparent">
+              по всему миру
+            </span>
+          </h2>
+          <p className="mt-4 max-w-xl text-pretty text-base text-slate-500 sm:text-lg">
+            Выбери студента — глобус развернётся к его городу и прочертит путь из
+            Бишкека. На телефоне просто свайпай карточки.
+          </p>
+        </motion.div>
 
-        {/* Right column — scrollable student list */}
-        <div className="min-h-[90vh] w-1/2 overflow-y-auto bg-white px-8 py-16 md:px-10 md:py-20">
-          <StudentListPlaceholder />
-        </div>
-      </div>
+        {/*
+          Single globe + list instance, reflowed responsively:
+          • mobile  → flex-col, globe sticky 40vh on top, list below (carousel)
+          • desktop → grid-cols-2 h-[85vh], globe left, list right (bento grid)
+        */}
+        <div className="flex flex-col gap-8 md:grid md:h-[85vh] md:grid-cols-2 md:items-center md:gap-8">
+          {/* Globe — sticky on mobile, static cell on desktop */}
+          <div className="sticky top-16 z-10 h-[40vh] w-full md:static md:h-[78vh]">
+            <StudentGlobe
+              students={STUDENTS}
+              activeId={activeId}
+              onSelect={setActiveId}
+            />
+          </div>
 
-      {/* ── Mobile layout: vertical stack ── */}
-      <div className="flex flex-col md:hidden">
-        {/* Globe — half the viewport height */}
-        <div className="h-[50vh] overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-[#EFF6FB]">
-          <GlobeEmbed />
-        </div>
-
-        {/* Student list — takes remaining space */}
-        <div className="flex-1 bg-white px-4 py-10">
-          <StudentListPlaceholder />
+          {/* Student list — vertical bento scroll on desktop, swipe carousel on mobile */}
+          <div className="md:max-h-[85vh] md:overflow-y-auto md:pr-1 scrollbar-hide">
+            <StudentList
+              students={STUDENTS}
+              activeId={activeId}
+              onSelect={setActiveId}
+            />
+          </div>
         </div>
       </div>
     </section>

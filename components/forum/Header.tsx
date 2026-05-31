@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { TICKETON_REGISTRATION_URL } from "@/config/links";
 
 const NAV_LINKS = [
   { label: "О событии",   href: "#about" },
@@ -83,10 +84,11 @@ export function Header() {
 
           {/* Right side */}
           <div className="flex items-center gap-3">
-            {/* CTA — hidden on xs, shown sm+ */}
+            {/* CTA — external Ticketon registration, hidden on xs, shown sm+ */}
             <a
-              href="#registration"
-              onClick={handleNavClick}
+              href={TICKETON_REGISTRATION_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="
                 hidden sm:inline-flex items-center
                 border border-foreground px-4 py-1.5 text-xs font-medium text-foreground

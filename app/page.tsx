@@ -99,18 +99,9 @@ const Team = dynamic(
   }
 );
 
-const Registration = dynamic(
-  () => import("@/components/forum/Registration").then((m) => ({ default: m.Registration })),
-  {
-    loading: () => (
-      <div className="bg-background px-4 py-12 md:px-8 md:py-24" aria-hidden>
-        <div className="mx-auto max-w-6xl">
-          <div className="h-8 w-40 animate-pulse bg-slate-100" />
-        </div>
-      </div>
-    ),
-  }
-);
+// Registration is now handled externally on Ticketon — the internal form
+// section has been removed. All "Регистрация" CTAs link to
+// TICKETON_REGISTRATION_URL (see config/links.ts).
 
 export default function ForumLanding() {
   return (
@@ -138,7 +129,6 @@ export default function ForumLanding() {
         <Schedule />
         <Tickets />
         <Team />
-        <Registration />
       </main>
 
       <Footer />

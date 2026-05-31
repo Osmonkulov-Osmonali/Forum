@@ -10,6 +10,7 @@ import {
 import { MapPin, Clock, Monitor, ArrowRight } from "lucide-react";
 import { HeroCanvas } from "@/components/forum/HeroCanvas";
 import { cn } from "@/lib/utils";
+import { TICKETON_REGISTRATION_URL } from "@/config/links";
 
 /* ──────────────────────────────────────────────────────────────────────────
    Animation variants
@@ -100,7 +101,9 @@ function MagneticCTA() {
   return (
     <motion.a
       ref={ref}
-      href="#registration"
+      href={TICKETON_REGISTRATION_URL}
+      target="_blank"
+      rel="noopener noreferrer"
       onPointerMove={handlePointerMove}
       onPointerLeave={reset}
       style={{ x: springX, y: springY }}

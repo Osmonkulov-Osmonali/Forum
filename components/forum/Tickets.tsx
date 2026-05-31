@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TICKETON_REGISTRATION_URL } from "@/config/links";
 
 type UtmParams = {
   source?: string;
@@ -49,7 +50,7 @@ const tiers: Tier[] = [
       "Доступ к записям (30 дней)",
     ],
     featured: false,
-    href: "https://tickets.example.com/buy",
+    href: TICKETON_REGISTRATION_URL,
     utm: { source: "landing", medium: "button", campaign: "forum2026", content: "standard" },
   },
   {
@@ -68,7 +69,7 @@ const tiers: Tier[] = [
       "Место в первых рядах",
     ],
     featured: true,
-    href: "https://tickets.example.com/buy",
+    href: TICKETON_REGISTRATION_URL,
     utm: { source: "landing", medium: "button", campaign: "forum2026", content: "business" },
   },
   {
@@ -87,7 +88,7 @@ const tiers: Tier[] = [
       "Трансфер и размещение",
     ],
     featured: false,
-    href: "https://tickets.example.com/buy",
+    href: TICKETON_REGISTRATION_URL,
     utm: { source: "landing", medium: "button", campaign: "forum2026", content: "vip" },
   },
 ];
