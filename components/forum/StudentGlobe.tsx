@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { AdaptiveDpr, AdaptiveEvents, Html, Line } from "@react-three/drei";
-import { motion } from "framer-motion";
-import { GraduationCap } from "lucide-react";
+import { AdaptiveDpr, AdaptiveEvents, Line } from "@react-three/drei";
+import { AnimatePresence, motion } from "framer-motion";
+import { GraduationCap, MapPin, Route } from "lucide-react";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
 import {
   BISHKEK,
+  distanceFromBishkek,
   studentLatLon,
   type AppStudent,
 } from "@/components/forum/appStudents";
@@ -196,61 +197,70 @@ function OrbitalRings() {
   );
 }
 
-// ─── Markers ──────────────────────────────────────────────────────────────────────
+// ─── Active student badge (fixed 2D overlay — avoids Html scaling glitches) ─────
 
-type MarkerKind = "source" | "active" | "default";
+function ActiveStudentGlobeBadge({ student }: { student: AppStudent }) {
+  const km = distanceFromBishkek(student);
 
-function MarkerTooltip({ student }: { student: AppStudent }) {
   return (
-    <Html
-      position={[0, 0.035, 0]}
-      center
-      distanceFactor={9}
-      style={{ pointerEvents: "none" }}
-      zIndexRange={[40, 0]}
+    <motion.div
+      key={student.id}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 8 }}
+      transition={{ type: "spring", stiffness: 320, damping: 28 }}
+      className="
+        pointer-events-none absolute bottom-6 left-4 right-4 z-10
+        mx-auto max-w-[280px] rounded-2xl border border-white/50
+        bg-white/80 p-3 shadow-[0_12px_32px_-12px_rgba(59,110,143,0.35)]
+        backdrop-blur-lg sm:left-6 sm:max-w-[300px]
+      "
     >
-      <motion.div
-        initial={{ scale: 0.85, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.85, opacity: 0 }}
-        transition={{ type: "spring", stiffness: 320, damping: 26 }}
-        className="
-          flex max-w-[220px] translate-x-4 -translate-y-4 items-center gap-2
-          rounded-full border border-white/30 bg-white/70 py-1.5 pl-1.5 pr-3
-          shadow-sm backdrop-blur-lg
-        "
-      >
+      <div className="flex items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={student.avatarUrl}
           alt=""
-          className="size-5 shrink-0 rounded-full border border-white/50 bg-slate-100 object-cover"
+          className="size-10 shrink-0 rounded-full border-2 border-[#8ECAE6]/60 bg-slate-100 object-cover"
         />
-        <span className="truncate text-xs font-medium text-slate-800">
-          {student.name}
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-sans text-sm font-semibold text-slate-900">
+            {student.name}
+          </p>
+          <p className="mt-0.5 flex items-center gap-1 truncate font-sans text-xs text-[#3B6E8F]">
+            <GraduationCap className="size-3 shrink-0" aria-hidden />
+            <span className="truncate">{student.university}</span>
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-slate-200/60 pt-2.5">
+        <span className="flex items-center gap-1 font-sans text-[11px] text-slate-500">
+          <Route className="size-3 shrink-0 text-[#8ECAE6]" aria-hidden />
+          Бишкек → {student.city}
         </span>
-        <GraduationCap className="size-3 shrink-0 text-[#3B6E8F]" aria-hidden />
-        <span className="max-w-[72px] truncate text-[10px] leading-none text-slate-500">
-          {student.university}
+        <span className="flex items-center gap-1 rounded-full bg-[#8ECAE6]/15 px-2 py-0.5 font-sans text-[10px] font-medium tabular-nums text-[#3B6E8F]">
+          <MapPin className="size-2.5 shrink-0" aria-hidden />
+          {km.toLocaleString("ru-RU")} км
         </span>
-      </motion.div>
-    </Html>
+      </div>
+    </motion.div>
   );
 }
+
+// ─── Markers ──────────────────────────────────────────────────────────────────────
+
+type MarkerKind = "source" | "active" | "default";
 
 function Marker({
   lat,
   lon,
   kind,
-  student,
-  showTooltip,
   onClick,
 }: {
   lat: number;
   lon: number;
   kind: MarkerKind;
-  student?: AppStudent;
-  showTooltip?: boolean;
   onClick?: () => void;
 }) {
   const pos = useMemo(() => latLonToVec3(lat, lon, GLOBE_R + 0.012), [lat, lon]);
@@ -288,10 +298,6 @@ function Marker({
           <sphereGeometry args={[size * 2.4, 16, 16]} />
           <meshBasicMaterial color={color} transparent opacity={0.2} depthWrite={false} />
         </mesh>
-      )}
-
-      {kind === "active" && showTooltip && student && (
-        <MarkerTooltip student={student} />
       )}
     </group>
   );
@@ -343,12 +349,10 @@ function GlobeArc({
 function GlobeGroup({
   students,
   activeId,
-  showDesktopTooltip,
   onSelect,
 }: {
   students: AppStudent[];
   activeId: string | null;
-  showDesktopTooltip: boolean;
   onSelect: (id: string) => void;
 }) {
   const groupRef = useRef<THREE.Group>(null);
@@ -394,8 +398,6 @@ function GlobeGroup({
             lat={lat}
             lon={lon}
             kind={isActive ? "active" : "default"}
-            student={isActive ? s : undefined}
-            showTooltip={showDesktopTooltip}
             onClick={() => onSelect(s.id)}
           />
         );
@@ -430,6 +432,11 @@ export function StudentGlobe({
   onSelect,
   className,
 }: StudentGlobeProps) {
+  const active = useMemo(
+    () => students.find((s) => s.id === activeId) ?? null,
+    [students, activeId],
+  );
+
   return (
     <div className={cn("relative h-full w-full bg-transparent", className)}>
       <Canvas
@@ -453,10 +460,15 @@ export function StudentGlobe({
         <GlobeGroup
           students={students}
           activeId={activeId}
-          showDesktopTooltip={showDesktopTooltip}
           onSelect={onSelect}
         />
       </Canvas>
+
+      <AnimatePresence mode="wait">
+        {active && showDesktopTooltip && (
+          <ActiveStudentGlobeBadge key={active.id} student={active} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

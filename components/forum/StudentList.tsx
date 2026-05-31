@@ -7,9 +7,10 @@ import {
   motion,
   type Variants,
 } from "framer-motion";
-import { MapPin, GraduationCap } from "lucide-react";
+import { MapPin, GraduationCap, Lightbulb, Route } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AppStudent } from "@/components/forum/appStudents";
+import { distanceFromBishkek } from "@/components/forum/appStudents";
 
 // ─── Animation tokens ───────────────────────────────────────────────────────────
 
@@ -44,8 +45,23 @@ function StudentAvatar({
   size?: "sm" | "md" | "lg";
 }) {
   const [failed, setFailed] = useState(false);
+  const [ready, setReady] = useState(false);
   const sizeClass =
     size === "lg" ? "size-14" : size === "sm" ? "size-10" : "size-12";
+
+  useEffect(() => {
+    setReady(true);
+  }, []);
+
+  const frameClass = cn(
+    "shrink-0 rounded-full border-2 object-cover transition-colors duration-300",
+    sizeClass,
+    active ? "border-[#3B6E8F] bg-white" : "border-white/80 bg-slate-100",
+  );
+
+  if (!ready) {
+    return <div className={frameClass} aria-hidden />;
+  }
 
   if (!failed) {
     return (
@@ -54,13 +70,7 @@ function StudentAvatar({
         src={student.avatarUrl}
         alt=""
         onError={() => setFailed(true)}
-        className={cn(
-          "shrink-0 rounded-full border-2 object-cover transition-colors duration-300",
-          sizeClass,
-          active
-            ? "border-[#3B6E8F] bg-white"
-            : "border-white/80 bg-slate-100",
-        )}
+        className={frameClass}
       />
     );
   }
@@ -89,30 +99,12 @@ function StudentCardExpandedDetails({
   message: string;
   show: boolean;
 }) {
+  if (!show) return null;
+
   return (
-    <AnimatePresence initial={false}>
-      {show && (
-        <motion.div
-          key="details"
-          layout
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={SPRING}
-          className="overflow-hidden"
-        >
-          <motion.p
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 4 }}
-            transition={{ ...SPRING, delay: 0.04 }}
-            className="mt-3 border-t border-slate-200/70 pt-3 text-sm leading-relaxed text-slate-600"
-          >
-            {message}
-          </motion.p>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <p className="mt-3 border-t border-slate-200/70 pt-3 text-sm leading-relaxed text-slate-600">
+      {message}
+    </p>
   );
 }
 
@@ -132,20 +124,52 @@ function StudentCardCityRow({
         <MapPin className="size-3.5 shrink-0 text-[#8ECAE6]" />
         {city}
       </span>
-      <AnimatePresence initial={false}>
-        {isActive && (
-          <motion.span
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.85 }}
-            transition={SPRING}
-            className="rounded-full bg-[#3B6E8F] px-2.5 py-0.5 font-sans text-[10px] font-medium uppercase tracking-wide text-white"
-          >
-            На карте
-          </motion.span>
-        )}
-      </AnimatePresence>
+      {isActive && (
+        <span className="rounded-full bg-[#3B6E8F] px-2.5 py-0.5 font-sans text-[10px] font-medium uppercase tracking-wide text-white">
+          На карте
+        </span>
+      )}
     </motion.div>
+  );
+}
+
+// ─── Hint panel (fills space beside expanded active card) ────────────────────────
+
+function StudentHintPanel({ student }: { student: AppStudent }) {
+  const km = distanceFromBishkek(student);
+
+  return (
+    <div
+      className="
+        flex flex-1 flex-col justify-between rounded-2xl border border-dashed
+        border-[#8ECAE6]/50 bg-gradient-to-br from-[#8ECAE6]/10 via-white/60 to-white/40
+        p-4 backdrop-blur-md
+      "
+    >
+      <div>
+        <div className="mb-2.5 flex items-center gap-2">
+          <span className="flex size-7 items-center justify-center rounded-full bg-[#3B6E8F]/10">
+            <Lightbulb className="size-3.5 text-[#3B6E8F]" aria-hidden />
+          </span>
+          <span className="font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-[#3B6E8F]">
+            Знаете ли вы?
+          </span>
+        </div>
+        <p className="text-pretty font-sans text-sm leading-relaxed text-slate-600">
+          {student.tip}
+        </p>
+      </div>
+
+      <div className="mt-4 flex items-center justify-between gap-2 border-t border-[#8ECAE6]/25 pt-3">
+        <span className="flex items-center gap-1.5 font-sans text-xs text-slate-500">
+          <Route className="size-3.5 shrink-0 text-[#8ECAE6]" aria-hidden />
+          Бишкек → {student.city}
+        </span>
+        <span className="rounded-full bg-white/80 px-2.5 py-0.5 font-sans text-[11px] font-medium tabular-nums text-[#3B6E8F]">
+          ~{km.toLocaleString("ru-RU")} км
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -293,6 +317,26 @@ function MobileExpandingCard({
         <StudentCardCityRow city={student.city} isActive={isActive} />
 
         <StudentCardExpandedDetails message={student.message} show={isActive} />
+
+        <AnimatePresence initial={false}>
+          {isActive && (
+            <motion.div
+              key="mobile-tip"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={SPRING}
+              className="overflow-hidden"
+            >
+              <div className="mt-3 flex items-start gap-2 rounded-xl border border-dashed border-[#8ECAE6]/40 bg-[#8ECAE6]/8 px-3 py-2.5">
+                <Lightbulb className="mt-0.5 size-3.5 shrink-0 text-[#3B6E8F]" aria-hidden />
+                <p className="text-pretty font-sans text-xs leading-relaxed text-slate-600">
+                  {student.tip}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.button>
     </motion.div>
   );
@@ -474,26 +518,114 @@ function DesktopStudentGrid({
     el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [activeId]);
 
+  const rows: (AppStudent | null)[][] = [];
+  for (let i = 0; i < students.length; i += 2) {
+    rows.push([students[i] ?? null, students[i + 1] ?? null]);
+  }
+
   return (
     <LayoutGroup id="student-desktop-grid">
       <motion.div
         variants={listGridVariants}
-        initial="hidden"
+        initial={false}
         whileInView="show"
         viewport={{ once: true, margin: "-100px" }}
-        className="hidden md:grid md:grid-cols-2 md:items-start md:gap-4"
+        className="hidden flex-col gap-4 md:flex"
       >
-        {students.map((student) => (
-          <DesktopExpandingCard
-            key={student.id}
-            student={student}
-            isActive={student.id === activeId}
-            onSelect={onSelect}
-            cardRef={(el) => {
-              cardRefs.current[student.id] = el;
-            }}
-          />
-        ))}
+        {rows.map(([left, right], rowIndex) => {
+          const activeLeft = left?.id === activeId;
+          const activeRight = right?.id === activeId;
+          const activeInRow = activeLeft ? left : activeRight ? right : null;
+
+          if (activeInRow) {
+            const activeOnLeft = activeLeft;
+            const neighbor = activeOnLeft ? right : left;
+
+            return (
+              <div
+                key={`row-${rowIndex}`}
+                className="grid grid-cols-2 items-start gap-4"
+              >
+                {activeOnLeft ? (
+                  <>
+                    <DesktopExpandingCard
+                      student={left!}
+                      isActive
+                      onSelect={onSelect}
+                      cardRef={(el) => {
+                        cardRefs.current[left!.id] = el;
+                      }}
+                    />
+                    <div className="flex min-h-full flex-col gap-4">
+                      {neighbor && (
+                        <DesktopExpandingCard
+                          student={neighbor}
+                          isActive={false}
+                          onSelect={onSelect}
+                          cardRef={(el) => {
+                            cardRefs.current[neighbor.id] = el;
+                          }}
+                        />
+                      )}
+                      <StudentHintPanel key={activeInRow.id} student={activeInRow} />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex min-h-full flex-col gap-4">
+                      {neighbor && (
+                        <DesktopExpandingCard
+                          student={neighbor}
+                          isActive={false}
+                          onSelect={onSelect}
+                          cardRef={(el) => {
+                            cardRefs.current[neighbor.id] = el;
+                          }}
+                        />
+                      )}
+                      <StudentHintPanel key={activeInRow.id} student={activeInRow} />
+                    </div>
+                    <DesktopExpandingCard
+                      student={right!}
+                      isActive
+                      onSelect={onSelect}
+                      cardRef={(el) => {
+                        cardRefs.current[right!.id] = el;
+                      }}
+                    />
+                  </>
+                )}
+              </div>
+            );
+          }
+
+          return (
+            <div key={`row-${rowIndex}`} className="grid grid-cols-2 gap-4">
+              {left && (
+                <DesktopExpandingCard
+                  student={left}
+                  isActive={false}
+                  onSelect={onSelect}
+                  cardRef={(el) => {
+                    cardRefs.current[left.id] = el;
+                  }}
+                />
+              )}
+              {right ? (
+                <DesktopExpandingCard
+                  student={right}
+                  isActive={false}
+                  onSelect={onSelect}
+                  cardRef={(el) => {
+                    cardRefs.current[right.id] = el;
+                  }}
+                />
+              ) : (
+                <div aria-hidden />
+              )}
+            </div>
+          );
+        })}
       </motion.div>
     </LayoutGroup>
   );
