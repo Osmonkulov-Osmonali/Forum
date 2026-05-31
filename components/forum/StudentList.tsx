@@ -89,46 +89,57 @@ function StudentAvatar({
   );
 }
 
-// ─── Hint panel (shows details for the selected student) ───────────────────────
+const EXPAND_SPRING = {
+  type: "spring" as const,
+  duration: 0.4,
+  bounce: 0,
+};
 
-function StudentHintPanel({ student }: { student: AppStudent }) {
+// ─── Expandable hints block (shared desktop + mobile) ───────────────────────────
+
+function StudentCardExpandableContent({
+  student,
+  isActive,
+}: {
+  student: AppStudent;
+  isActive: boolean;
+}) {
   const km = distanceFromBishkek(student);
 
   return (
-    <div
-      className="
-        flex flex-1 flex-col justify-between rounded-2xl border border-dashed
-        border-[#8ECAE6]/50 bg-gradient-to-br from-[#8ECAE6]/10 via-white/60 to-white/40
-        p-4 backdrop-blur-md
-      "
+    <motion.div
+      initial={false}
+      animate={{
+        height: isActive ? "auto" : 0,
+        opacity: isActive ? 1 : 0,
+      }}
+      transition={EXPAND_SPRING}
+      className="overflow-hidden"
     >
-      <div>
-        <div className="mb-2.5 flex items-center gap-2">
-          <span className="flex size-7 items-center justify-center rounded-full bg-[#3B6E8F]/10">
-            <Lightbulb className="size-3.5 text-[#3B6E8F]" aria-hidden />
-          </span>
-          <span className="font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-[#3B6E8F]">
-            Знаете ли вы?
-          </span>
-        </div>
-        <p className="text-pretty font-sans text-sm leading-relaxed text-slate-600">
+      <div className="mt-3 space-y-3 border-t border-slate-200/70 pt-3">
+        <p className="break-words font-sans text-sm leading-relaxed text-slate-600 whitespace-normal">
           {student.message}
         </p>
-        <p className="mt-2.5 text-pretty font-sans text-xs leading-relaxed text-slate-500">
-          {student.tip}
-        </p>
+        <div className="flex items-start gap-2 rounded-xl border border-dashed border-[#8ECAE6]/40 bg-[#8ECAE6]/8 px-3 py-2.5">
+          <Lightbulb
+            className="mt-0.5 size-3.5 shrink-0 text-[#3B6E8F]"
+            aria-hidden
+          />
+          <p className="min-w-0 break-words font-sans text-xs leading-relaxed text-slate-600 whitespace-normal">
+            {student.tip}
+          </p>
+        </div>
+        <div className="flex items-center justify-between gap-2 pt-1">
+          <span className="flex items-center gap-1.5 font-sans text-xs text-slate-500">
+            <Route className="size-3.5 shrink-0 text-[#8ECAE6]" aria-hidden />
+            Бишкек → {student.city}
+          </span>
+          <span className="rounded-full bg-[#8ECAE6]/15 px-2.5 py-0.5 font-sans text-[11px] font-medium tabular-nums text-[#3B6E8F]">
+            ~{km.toLocaleString("ru-RU")} км
+          </span>
+        </div>
       </div>
-
-      <div className="mt-4 flex items-center justify-between gap-2 border-t border-[#8ECAE6]/25 pt-3">
-        <span className="flex items-center gap-1.5 font-sans text-xs text-slate-500">
-          <Route className="size-3.5 shrink-0 text-[#8ECAE6]" aria-hidden />
-          Бишкек → {student.city}
-        </span>
-        <span className="rounded-full bg-white/80 px-2.5 py-0.5 font-sans text-[11px] font-medium tabular-nums text-[#3B6E8F]">
-          ~{km.toLocaleString("ru-RU")} км
-        </span>
-      </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -149,56 +160,67 @@ function DesktopExpandingCard({
     <motion.div
       ref={cardRef}
       data-id={student.id}
-      layout
-      animate={{ scale: isActive ? 0.9 : 1, opacity: isActive ? 0.82 : 1 }}
+      layout="position"
+      animate={{ scale: isActive ? 1.02 : 1, opacity: isActive ? 1 : 0.86 }}
       transition={SPRING}
-      className="min-w-0 origin-center"
+      className={cn("min-w-0 origin-center", isActive && "relative z-10")}
     >
       <motion.button
         type="button"
-        layout
         onClick={() => onSelect(student.id)}
         whileTap={{ scale: 0.985 }}
         transition={SPRING}
         className={cn(
-          "group/card relative w-full overflow-hidden rounded-2xl border text-left backdrop-blur-md transition-shadow duration-300",
+          "group/card relative w-full rounded-2xl border text-left backdrop-blur-md transition-shadow duration-300",
           isActive
-            ? "border-[#3B6E8F]/70 bg-white/60 p-3 shadow-none ring-1 ring-[#8ECAE6]/50"
+            ? "border-[#3B6E8F] bg-white/85 p-5 shadow-[0_16px_40px_-16px_rgba(59,110,143,0.45)] ring-1 ring-[#8ECAE6]/80"
             : "border-white/60 bg-white/50 p-4 shadow-[0_10px_30px_-20px_rgba(15,23,42,0.3)] hover:border-[#8ECAE6]/70 hover:bg-white/60",
         )}
       >
-        <motion.div layout className="relative flex items-center gap-3">
+        <div
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute -right-6 -top-8 size-24 rounded-full bg-[#8ECAE6]/30 blur-2xl transition-opacity duration-500",
+            isActive ? "opacity-100" : "opacity-0 group-hover/card:opacity-60",
+          )}
+        />
+
+        <div className="relative flex items-start gap-3.5">
           <StudentAvatar
             student={student}
             active={isActive}
-            size={isActive ? "sm" : "md"}
+            size={isActive ? "lg" : "md"}
           />
           <div className="min-w-0 flex-1">
             <p
               className={cn(
-                "truncate font-sans font-semibold text-slate-900",
-                isActive ? "text-xs" : "text-sm",
+                "break-words font-sans font-semibold leading-snug text-slate-900 whitespace-normal",
+                isActive ? "text-base" : "text-sm",
               )}
             >
               {student.name}
             </p>
-            <p className="mt-0.5 flex items-center gap-1.5 truncate font-sans text-xs text-[#3B6E8F]">
-              <GraduationCap className="size-3 shrink-0" />
-              <span className="truncate">{student.university}</span>
+            <p className="mt-0.5 flex items-start gap-1.5 font-sans text-xs leading-snug text-[#3B6E8F]">
+              <GraduationCap className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+              <span className="min-w-0 break-words whitespace-normal">
+                {student.university}
+              </span>
             </p>
             {!isActive && (
-              <p className="mt-1 flex items-center gap-1 font-sans text-[11px] text-slate-500">
-                <MapPin className="size-3 shrink-0 text-[#8ECAE6]" />
-                {student.city}
+              <p className="mt-1 flex items-start gap-1 font-sans text-[11px] leading-snug text-slate-500">
+                <MapPin className="mt-0.5 size-3 shrink-0 text-[#8ECAE6]" aria-hidden />
+                <span className="break-words whitespace-normal">{student.city}</span>
               </p>
             )}
           </div>
           {isActive && (
-            <span className="shrink-0 rounded-full bg-[#3B6E8F] px-2 py-0.5 font-sans text-[9px] font-medium uppercase tracking-wide text-white">
+            <span className="shrink-0 rounded-full bg-[#3B6E8F] px-2.5 py-0.5 font-sans text-[10px] font-medium uppercase tracking-wide text-white">
               На карте
             </span>
           )}
-        </motion.div>
+        </div>
+
+        <StudentCardExpandableContent student={student} isActive={isActive} />
       </motion.button>
     </motion.div>
   );
@@ -209,12 +231,6 @@ function DesktopExpandingCard({
 /** Fixed slide width — identical for every card so snap/scroll math stays stable. */
 const MOBILE_SLIDE_WIDTH =
   "w-[calc(100vw-32px)] max-w-[340px] shrink-0 snap-center";
-
-const EXPAND_SPRING = {
-  type: "spring" as const,
-  duration: 0.4,
-  bounce: 0,
-};
 
 // ─── Mobile expanding carousel card ─────────────────────────────────────────────
 
@@ -231,65 +247,62 @@ function MobileExpandingCard({
 }) {
   return (
     <div ref={cardRef} data-id={student.id} className={MOBILE_SLIDE_WIDTH}>
-      <button
-        type="button"
-        onClick={() => onSelect(student.id)}
-        className={cn(
-          "w-full rounded-2xl border text-left backdrop-blur-md transition-colors duration-300",
-          isActive
-            ? "border-[#3B6E8F] bg-white/85 p-4 shadow-[0_12px_32px_-14px_rgba(59,110,143,0.35)] ring-1 ring-[#8ECAE6]/70"
-            : "border-white/60 bg-white/50 p-4 shadow-[0_8px_24px_-18px_rgba(15,23,42,0.25)]",
-        )}
+      <motion.div
+        animate={{
+          scale: isActive ? 1 : 0.94,
+          opacity: isActive ? 1 : 0.72,
+        }}
+        transition={SPRING}
+        className="w-full origin-center"
       >
-        <div className="relative flex items-start gap-3">
-          <StudentAvatar student={student} active={isActive} size="md" />
-          <div className="min-w-0 flex-1">
-            <p className="break-words font-sans text-sm font-semibold leading-snug text-slate-900 whitespace-normal">
-              {student.name}
-            </p>
-            <p className="mt-0.5 flex items-start gap-1.5 font-sans text-xs leading-snug text-[#3B6E8F]">
-              <GraduationCap className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-              <span className="min-w-0 break-words whitespace-normal">
-                {student.university}
-              </span>
-            </p>
-            <p className="mt-1 flex items-start gap-1 font-sans text-[11px] leading-snug text-slate-500">
-              <MapPin className="mt-0.5 size-3 shrink-0 text-[#8ECAE6]" aria-hidden />
-              <span className="break-words whitespace-normal">{student.city}</span>
-            </p>
-          </div>
-          {isActive && (
-            <span className="shrink-0 rounded-full bg-[#3B6E8F] px-2 py-0.5 font-sans text-[9px] font-medium uppercase tracking-wide text-white">
-              На карте
-            </span>
+        <button
+          type="button"
+          onClick={() => onSelect(student.id)}
+          className={cn(
+            "w-full rounded-2xl border text-left backdrop-blur-md transition-colors duration-300",
+            isActive
+              ? "border-[#3B6E8F] bg-white/85 p-5 shadow-[0_16px_40px_-16px_rgba(59,110,143,0.45)] ring-1 ring-[#8ECAE6]/80"
+              : "border-white/60 bg-white/50 p-4 shadow-[0_8px_24px_-18px_rgba(15,23,42,0.25)]",
           )}
-        </div>
-
-        <motion.div
-          initial={false}
-          animate={{
-            height: isActive ? "auto" : 0,
-            opacity: isActive ? 1 : 0,
-          }}
-          transition={EXPAND_SPRING}
-          className="overflow-hidden"
         >
-          <div className="mt-3 space-y-3 border-t border-slate-200/70 pt-3">
-            <p className="break-words font-sans text-sm leading-relaxed text-slate-600 whitespace-normal">
-              {student.message}
-            </p>
-            <div className="flex items-start gap-2 rounded-xl border border-dashed border-[#8ECAE6]/40 bg-[#8ECAE6]/8 px-3 py-2.5">
-              <Lightbulb
-                className="mt-0.5 size-3.5 shrink-0 text-[#3B6E8F]"
-                aria-hidden
-              />
-              <p className="min-w-0 break-words font-sans text-xs leading-relaxed text-slate-600 whitespace-normal">
-                {student.tip}
+          <div className="relative flex items-start gap-3.5">
+            <StudentAvatar
+              student={student}
+              active={isActive}
+              size={isActive ? "lg" : "md"}
+            />
+            <div className="min-w-0 flex-1">
+              <p
+                className={cn(
+                  "break-words font-sans font-semibold leading-snug text-slate-900 whitespace-normal",
+                  isActive ? "text-base" : "text-sm",
+                )}
+              >
+                {student.name}
               </p>
+              <p className="mt-0.5 flex items-start gap-1.5 font-sans text-xs leading-snug text-[#3B6E8F]">
+                <GraduationCap className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+                <span className="min-w-0 break-words whitespace-normal">
+                  {student.university}
+                </span>
+              </p>
+              {!isActive && (
+                <p className="mt-1 flex items-start gap-1 font-sans text-[11px] leading-snug text-slate-500">
+                  <MapPin className="mt-0.5 size-3 shrink-0 text-[#8ECAE6]" aria-hidden />
+                  <span className="break-words whitespace-normal">{student.city}</span>
+                </p>
+              )}
             </div>
+            {isActive && (
+              <span className="shrink-0 rounded-full bg-[#3B6E8F] px-2.5 py-0.5 font-sans text-[10px] font-medium uppercase tracking-wide text-white">
+                На карте
+              </span>
+            )}
           </div>
-        </motion.div>
-      </button>
+
+          <StudentCardExpandableContent student={student} isActive={isActive} />
+        </button>
+      </motion.div>
     </div>
   );
 }
@@ -473,7 +486,6 @@ function DesktopStudentGrid({
   onSelect: (id: string) => void;
 }) {
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const activeStudent = students.find((s) => s.id === activeId) ?? null;
 
   useEffect(() => {
     if (!activeId) return;
@@ -490,7 +502,7 @@ function DesktopStudentGrid({
         viewport={{ once: true, margin: "-100px" }}
         className="hidden md:flex md:flex-col md:gap-4"
       >
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 items-start gap-4">
           {students.map((student) => (
             <DesktopExpandingCard
               key={student.id}
@@ -503,8 +515,6 @@ function DesktopStudentGrid({
             />
           ))}
         </div>
-
-        {activeStudent && <StudentHintPanel student={activeStudent} />}
       </motion.div>
     </LayoutGroup>
   );

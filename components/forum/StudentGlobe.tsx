@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentRef,
+  type RefObject,
+} from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { AdaptiveDpr, AdaptiveEvents, Line, OrbitControls } from "@react-three/drei";
 import { AnimatePresence, motion } from "framer-motion";
@@ -24,8 +31,9 @@ const C_HALO = "#A2D2FF";
 const COASTLINE_URL =
   "https://raw.githubusercontent.com/martynafford/natural-earth-geojson/master/110m/physical/ne_110m_coastline.json";
 
-// Camera sits slightly above the equator.
+// Camera sits slightly above the equator; active student is slerped to face this direction.
 const CAM: [number, number, number] = [0, 0.35, 2.85];
+const FRONT_DIR = new THREE.Vector3(...CAM).normalize();
 
 // ─── Geo helpers ────────────────────────────────────────────────────────────────
 
@@ -305,11 +313,18 @@ function Marker({
 function GlobeArc({
   source,
   target,
+  replayKey,
 }: {
   source: { lat: number; lon: number };
   target: { lat: number; lon: number };
+  replayKey: number;
 }) {
   const progressRef = useRef(0);
+
+  useEffect(() => {
+    progressRef.current = 0;
+  }, [replayKey]);
+
   const [pts, setPts] = useState<[number, number, number][]>(() => {
     const s = latLonToVec3(source.lat, source.lon, GLOBE_R + 0.012);
     return [
@@ -346,19 +361,38 @@ function GlobeArc({
 function GlobeGroup({
   students,
   activeId,
+  focusKey,
+  userInteractingRef,
   onSelect,
 }: {
   students: AppStudent[];
   activeId: string | null;
+  focusKey: number;
+  userInteractingRef: RefObject<boolean>;
   onSelect: (id: string) => void;
 }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const targetQuat = useRef(new THREE.Quaternion());
+
   const active = useMemo(
     () => students.find((s) => s.id === activeId) ?? null,
     [students, activeId],
   );
 
+  useFrame((_, delta) => {
+    if (!active || userInteractingRef.current) return;
+    const g = groupRef.current;
+    if (!g) return;
+
+    const { lat, lon } = studentLatLon(active);
+    const dir = latLonToVec3(lat, lon, 1).normalize();
+    targetQuat.current.setFromUnitVectors(dir, FRONT_DIR);
+    const t = 1 - Math.pow(0.0016, delta);
+    g.quaternion.slerp(targetQuat.current, t);
+  });
+
   return (
-    <group>
+    <group ref={groupRef}>
       <GlobeMesh />
       <Graticule />
       <Continents />
@@ -384,7 +418,8 @@ function GlobeGroup({
       {/* Active arc */}
       {active && (
         <GlobeArc
-          key={active.id}
+          key={`${active.id}-${focusKey}`}
+          replayKey={focusKey}
           source={BISHKEK}
           target={studentLatLon(active)}
         />
@@ -393,11 +428,67 @@ function GlobeGroup({
   );
 }
 
+// ─── Scene (camera controls + auto-focus) ───────────────────────────────────────
+
+function GlobeScene({
+  students,
+  activeId,
+  focusKey,
+  onSelect,
+}: {
+  students: AppStudent[];
+  activeId: string | null;
+  focusKey: number;
+  onSelect: (id: string) => void;
+}) {
+  const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
+  const userInteractingRef = useRef(false);
+
+  useEffect(() => {
+    userInteractingRef.current = false;
+    controlsRef.current?.reset();
+  }, [focusKey, activeId]);
+
+  return (
+    <>
+      <ambientLight intensity={1.05} />
+      <directionalLight position={[3, 4, 5]} intensity={0.7} color="#ffffff" />
+      <directionalLight position={[-4, -2, -3]} intensity={0.25} color={C_HALO} />
+
+      <Atmosphere />
+      <OrbitalRings />
+      <GlobeGroup
+        students={students}
+        activeId={activeId}
+        focusKey={focusKey}
+        userInteractingRef={userInteractingRef}
+        onSelect={onSelect}
+      />
+
+      <OrbitControls
+        ref={controlsRef}
+        enableZoom={false}
+        enablePan={false}
+        enableRotate
+        autoRotate={false}
+        enableDamping
+        dampingFactor={0.08}
+        rotateSpeed={0.65}
+        makeDefault
+        onStart={() => {
+          userInteractingRef.current = true;
+        }}
+      />
+    </>
+  );
+}
+
 // ─── Exported canvas wrapper ──────────────────────────────────────────────────────
 
 interface StudentGlobeProps {
   students: AppStudent[];
   activeId: string | null;
+  focusKey: number;
   showDesktopTooltip?: boolean;
   onSelect: (id: string) => void;
   className?: string;
@@ -406,6 +497,7 @@ interface StudentGlobeProps {
 export function StudentGlobe({
   students,
   activeId,
+  focusKey,
   showDesktopTooltip = true,
   onSelect,
   className,
@@ -428,27 +520,11 @@ export function StudentGlobe({
         <AdaptiveDpr pixelated />
         <AdaptiveEvents />
 
-        <ambientLight intensity={1.05} />
-        <directionalLight position={[3, 4, 5]} intensity={0.7} color="#ffffff" />
-        <directionalLight position={[-4, -2, -3]} intensity={0.25} color={C_HALO} />
-
-        <Atmosphere />
-        <OrbitalRings />
-        <GlobeGroup
+        <GlobeScene
           students={students}
           activeId={activeId}
+          focusKey={focusKey}
           onSelect={onSelect}
-        />
-
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          enableRotate
-          autoRotate={false}
-          enableDamping
-          dampingFactor={0.08}
-          rotateSpeed={0.65}
-          makeDefault
         />
       </Canvas>
 

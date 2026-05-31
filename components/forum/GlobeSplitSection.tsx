@@ -55,17 +55,19 @@ function useIsDesktopTooltip() {
  *
  * Controlled split section: one `selectedStudentId` drives both the 3-D globe
  * and the student list.
- *   • list tap → highlights marker + arc; card shrinks compact
- *   • drag globe → manual orbit via OrbitControls
+ *   • list tap → globe auto-focuses route; card expands with hints
+ *   • drag globe → free orbit; tap same student again → route refocus
  */
 export function GlobeSplitSection() {
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     APP_STUDENTS[0]?.id ?? null,
   );
+  const [focusKey, setFocusKey] = useState(0);
   const isDesktopTooltip = useIsDesktopTooltip();
 
   const handleSelect = useCallback((id: string) => {
     setSelectedStudentId(id);
+    setFocusKey((k) => k + 1);
   }, []);
 
   return (
@@ -96,9 +98,9 @@ export function GlobeSplitSection() {
             </span>
           </h2>
           <p className="mt-4 max-w-xl text-pretty text-base text-slate-500 sm:text-lg">
-            Выбери студента — на глобусе подсветится его город и путь из Бишкека.
-            Вращай глобус мышью или пальцем, а карточка выбранного студента станет
-            компактнее.
+            Выбери студента — глобус покажет маршрут из Бишкека и раскроет карточку
+            с подсказкой. После этого можно свободно вращать глобус — нажми на
+            студента ещё раз, чтобы вернуть вид на маршрут.
           </p>
         </motion.div>
 
@@ -108,6 +110,7 @@ export function GlobeSplitSection() {
               <StudentGlobe
                 students={APP_STUDENTS}
                 activeId={selectedStudentId}
+                focusKey={focusKey}
                 showDesktopTooltip={isDesktopTooltip}
                 onSelect={handleSelect}
               />
