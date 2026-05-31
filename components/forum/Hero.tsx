@@ -34,6 +34,22 @@ const bentoCardVariants: Variants = {
   },
 };
 
+const SCROLL_VIEWPORT = { once: false, amount: 0.2 } as const;
+
+const heroHeadingContainer: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12 } },
+};
+
+const heroHeadingLine: Variants = {
+  hidden: { opacity: 0, y: 28 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
 /* ──────────────────────────────────────────────────────────────────────────
    Data
    ────────────────────────────────────────────────────────────────────────── */
@@ -256,26 +272,42 @@ export function Hero() {
           </div>
 
           {/* Main heading */}
-          <h1 className="mb-5 font-heading text-[clamp(2.4rem,9vw,6.5rem)] font-semibold leading-[0.95] tracking-[-0.03em] text-balance text-[#0F172A] md:mb-6">
-            <span className="block">Study</span>
-            <span className="block bg-gradient-to-r from-[#0F172A] via-[#3B6E8F] to-[#8ECAE6] bg-clip-text pb-2 text-transparent">
+          <motion.h1
+            variants={heroHeadingContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={SCROLL_VIEWPORT}
+            className="mb-5 font-heading text-[clamp(2.4rem,9vw,6.5rem)] font-semibold leading-[0.95] tracking-[-0.03em] text-balance text-[#0F172A] md:mb-6"
+          >
+            <motion.span variants={heroHeadingLine} className="block">
+              Study
+            </motion.span>
+            <motion.span
+              variants={heroHeadingLine}
+              className="block bg-gradient-to-r from-[#0F172A] via-[#3B6E8F] to-[#8ECAE6] bg-clip-text pb-2 text-transparent"
+            >
               free&nbsp;forum
-            </span>
-          </h1>
+            </motion.span>
+          </motion.h1>
 
           {/* Subheading */}
-          <p className="mx-auto mb-7 max-w-xl text-pretty text-base leading-relaxed text-[#64748B] sm:text-lg md:mx-0 md:mb-9">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={SCROLL_VIEWPORT}
+            transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+            className="mx-auto mb-7 max-w-xl text-pretty text-base leading-relaxed text-[#64748B] sm:text-lg md:mx-0 md:mb-9"
+          >
             Масштабное событие для школьников, студентов и родителей —
             всё о поступлении в топовые университеты мира.
-          </p>
+          </motion.p>
 
           {/* Bento stat cards */}
           <motion.div
             variants={bentoGridVariants}
             initial="hidden"
-            animate="show"
             whileInView="show"
-            viewport={{ once: true, margin: "-20px" }}
+            viewport={SCROLL_VIEWPORT}
             className="mb-7 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 md:mb-9 md:gap-6"
           >
             {STATS.map((stat) => (

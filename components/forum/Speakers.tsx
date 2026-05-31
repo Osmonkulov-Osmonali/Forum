@@ -267,7 +267,7 @@ interface Props {
 
 export function Speakers({ initialSpeakers }: Props) {
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView   = useInView(sectionRef, { once: true, margin: "-80px" });
+  const isInView   = useInView(sectionRef, { once: false, amount: 0.2 });
 
   const [continentFilter, setContinentFilter] = useState<Continent | "all">("all");
   const [selected,        setSelected]        = useState<Speaker | null>(null);
@@ -295,7 +295,7 @@ export function Speakers({ initialSpeakers }: Props) {
         {/* ── Header ── */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
           transition={{ duration: 0.55, ease: "easeOut" }}
           className="mb-8 md:mb-12"
         >
@@ -316,7 +316,7 @@ export function Speakers({ initialSpeakers }: Props) {
         {initialSpeakers.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
             transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }}
             className="mb-6 md:mb-8"
           >

@@ -15,9 +15,47 @@ import { distanceFromBishkek } from "@/components/forum/appStudents";
 
 const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
 
+const EXPAND_SPRING = {
+  type: "spring" as const,
+  duration: 0.4,
+  bounce: 0,
+};
+
 const listGridVariants: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.1 } },
+};
+
+const expandVariants: Variants = {
+  hidden: { height: 0, opacity: 0 },
+  visible: {
+    height: "auto",
+    opacity: 1,
+    transition: EXPAND_SPRING,
+  },
+};
+
+const cardTextContainerVariants: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+};
+
+const textVariants: Variants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};
+
+const badgeVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.85 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: SPRING,
+  },
 };
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
@@ -89,12 +127,6 @@ function StudentAvatar({
   );
 }
 
-const EXPAND_SPRING = {
-  type: "spring" as const,
-  duration: 0.4,
-  bounce: 0,
-};
-
 // ─── Expandable hints block (shared desktop + mobile) ───────────────────────────
 
 function StudentCardExpandableContent({
@@ -105,22 +137,32 @@ function StudentCardExpandableContent({
   isActive: boolean;
 }) {
   const km = distanceFromBishkek(student);
+  const textReplayKey = isActive ? `active-${student.id}` : "inactive";
 
   return (
     <motion.div
-      initial={false}
-      animate={{
-        height: isActive ? "auto" : 0,
-        opacity: isActive ? 1 : 0,
-      }}
-      transition={EXPAND_SPRING}
+      variants={expandVariants}
+      initial="hidden"
+      animate={isActive ? "visible" : "hidden"}
       className="overflow-hidden"
     >
-      <div className="mt-3 space-y-3 border-t border-slate-200/70 pt-3">
-        <p className="break-words font-sans text-sm leading-relaxed text-slate-600 whitespace-normal">
+      <motion.div
+        key={textReplayKey}
+        variants={cardTextContainerVariants}
+        initial="hidden"
+        animate={isActive ? "visible" : "hidden"}
+        className="mt-3 space-y-3 border-t border-slate-200/70 pt-3"
+      >
+        <motion.p
+          variants={textVariants}
+          className="break-words font-sans text-sm leading-relaxed text-slate-600 whitespace-normal"
+        >
           {student.message}
-        </p>
-        <div className="flex items-start gap-2 rounded-xl border border-dashed border-[#8ECAE6]/40 bg-[#8ECAE6]/8 px-3 py-2.5">
+        </motion.p>
+        <motion.div
+          variants={textVariants}
+          className="flex items-start gap-2 rounded-xl border border-dashed border-[#8ECAE6]/40 bg-[#8ECAE6]/8 px-3 py-2.5"
+        >
           <Lightbulb
             className="mt-0.5 size-3.5 shrink-0 text-[#3B6E8F]"
             aria-hidden
@@ -128,8 +170,11 @@ function StudentCardExpandableContent({
           <p className="min-w-0 break-words font-sans text-xs leading-relaxed text-slate-600 whitespace-normal">
             {student.tip}
           </p>
-        </div>
-        <div className="flex items-center justify-between gap-2 pt-1">
+        </motion.div>
+        <motion.div
+          variants={textVariants}
+          className="flex items-center justify-between gap-2 pt-1"
+        >
           <span className="flex items-center gap-1.5 font-sans text-xs text-slate-500">
             <Route className="size-3.5 shrink-0 text-[#8ECAE6]" aria-hidden />
             Бишкек → {student.city}
@@ -137,9 +182,22 @@ function StudentCardExpandableContent({
           <span className="rounded-full bg-[#8ECAE6]/15 px-2.5 py-0.5 font-sans text-[11px] font-medium tabular-nums text-[#3B6E8F]">
             ~{km.toLocaleString("ru-RU")} км
           </span>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </motion.div>
+  );
+}
+
+function ActiveMapBadge({ isActive }: { isActive: boolean }) {
+  return (
+    <motion.span
+      variants={badgeVariants}
+      initial="hidden"
+      animate={isActive ? "visible" : "hidden"}
+      className="shrink-0 rounded-full bg-[#3B6E8F] px-2.5 py-0.5 font-sans text-[10px] font-medium uppercase tracking-wide text-white"
+    >
+      На карте
+    </motion.span>
   );
 }
 
@@ -213,11 +271,7 @@ function DesktopExpandingCard({
               </p>
             )}
           </div>
-          {isActive && (
-            <span className="shrink-0 rounded-full bg-[#3B6E8F] px-2.5 py-0.5 font-sans text-[10px] font-medium uppercase tracking-wide text-white">
-              На карте
-            </span>
-          )}
+          {isActive && <ActiveMapBadge isActive={isActive} />}
         </div>
 
         <StudentCardExpandableContent student={student} isActive={isActive} />
@@ -293,11 +347,7 @@ function MobileExpandingCard({
                 </p>
               )}
             </div>
-            {isActive && (
-              <span className="shrink-0 rounded-full bg-[#3B6E8F] px-2.5 py-0.5 font-sans text-[10px] font-medium uppercase tracking-wide text-white">
-                На карте
-              </span>
-            )}
+            {isActive && <ActiveMapBadge isActive={isActive} />}
           </div>
 
           <StudentCardExpandableContent student={student} isActive={isActive} />
@@ -499,7 +549,7 @@ function DesktopStudentGrid({
         variants={listGridVariants}
         initial={false}
         whileInView="show"
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: false, amount: 0.2 }}
         className="hidden md:flex md:flex-col md:gap-4"
       >
         <div className="grid grid-cols-2 items-start gap-4">

@@ -32,6 +32,8 @@ const headingContainer: Variants = {
   visible: { transition: { staggerChildren: 0.028 } },
 };
 
+const SCROLL_IN_VIEW = { once: false, amount: 0.2 } as const;
+
 function AboutArticle({
   title,
   children,
@@ -42,7 +44,7 @@ function AboutArticle({
   staggerDelay?: number;
 }) {
   const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const isInView = useInView(ref, SCROLL_IN_VIEW);
 
   return (
     <motion.article
@@ -90,7 +92,7 @@ type CounterProps = {
 
 function Counter({ value, suffix = "" }: CounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const isInView = useInView(ref, SCROLL_IN_VIEW);
   const spring = useSpring(0, { stiffness: 60, damping: 24 });
   const [display, setDisplay] = useState(0);
 
@@ -109,9 +111,16 @@ function Counter({ value, suffix = "" }: CounterProps) {
   });
 
   useEffect(() => {
-    if (!isInView) return;
+    if (!isInView) {
+      if (reducedMotionRef.current) {
+        setDisplay(0);
+      } else {
+        spring.set(0);
+      }
+      return;
+    }
     if (reducedMotionRef.current) {
-      setDisplay(value); // instant — no spring, no rAF loop
+      setDisplay(value);
     } else {
       spring.set(value);
     }
@@ -134,7 +143,7 @@ const stats = [
 
 export function About() {
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const isInView = useInView(sectionRef, SCROLL_IN_VIEW);
 
   return (
     <section
