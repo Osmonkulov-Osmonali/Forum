@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { STUDENTS } from "@/components/forum/StudentList";
+import { APP_STUDENTS } from "@/components/forum/appStudents";
 import { StudentList } from "@/components/forum/StudentList";
+import { StudentBottomSheet } from "@/components/forum/StudentBottomSheet";
+
+export { APP_STUDENTS, type AppStudent } from "@/components/forum/appStudents";
 
 // ─── Globe loading skeleton ───────────────────────────────────────────────────
 
@@ -32,24 +35,56 @@ const StudentGlobe = dynamic(
   },
 );
 
+function useIsDesktopTooltip() {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 640px)");
+    const sync = () => setIsDesktop(mql.matches);
+    sync();
+    mql.addEventListener("change", sync);
+    return () => mql.removeEventListener("change", sync);
+  }, []);
+
+  return isDesktop;
+}
+
 // ─── Main section ─────────────────────────────────────────────────────────────
 
 /**
  * GlobeSplitSection
  *
- * Light, premium split section that wires the controlled 3-D globe to a
- * student list. A single `activeId` state is shared both ways:
- *   • list click / mobile swipe → globe rotates (lerp) toward the student's
- *     coordinates and draws an animated Bishkek → city arc.
- *   • globe marker click        → list highlights and (mobile) snaps the card
- *     into view.
+ * Controlled split section: one `selectedStudentId` drives both the 3-D globe
+ * and the student list.
+ *   • list click  → globe rotates toward `coordinates`, arc animates
+ *   • marker click → list highlights; mobile bottom sheet opens
  *
- * Desktop (md+): grid md:grid-cols-2 h-[85vh] — globe left, list right.
- * Mobile:        flex-col — globe sticky on top at 40vh, list (swipe carousel)
- *                below.
+ * Desktop (sm+): floating glass tooltip via `<Html>` beside the active marker.
+ * Mobile (<sm): bottom sheet with full student details; no in-canvas tooltip.
  */
 export function GlobeSplitSection() {
-  const [activeId, setActiveId] = useState<string | null>(STUDENTS[0]?.id ?? null);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    APP_STUDENTS[0]?.id ?? null,
+  );
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const isDesktopTooltip = useIsDesktopTooltip();
+
+  const selectedStudent =
+    APP_STUDENTS.find((s) => s.id === selectedStudentId) ?? null;
+
+  const handleSelect = useCallback(
+    (id: string) => {
+      setSelectedStudentId(id);
+      if (typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches) {
+        setIsSheetOpen(true);
+      }
+    },
+    [],
+  );
+
+  const handleCloseSheet = useCallback(() => {
+    setIsSheetOpen(false);
+  }, []);
 
   return (
     <section
@@ -58,12 +93,14 @@ export function GlobeSplitSection() {
       className="bg-white"
     >
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-20 lg:py-24">
-        {/* ── Header (dark, Hero-style) ── */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+          transition={{
+            duration: 0.6,
+            ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+          }}
           className="mb-10 md:mb-14"
         >
           <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/60 px-3.5 py-1.5 text-xs font-medium uppercase tracking-[0.18em] text-[#3B6E8F] backdrop-blur-md">
@@ -78,23 +115,18 @@ export function GlobeSplitSection() {
           </h2>
           <p className="mt-4 max-w-xl text-pretty text-base text-slate-500 sm:text-lg">
             Выбери студента — глобус развернётся к его городу и прочертит путь из
-            Бишкека. На телефоне просто свайпай карточки.
+            Бишкека. На телефоне откроется карточка снизу.
           </p>
         </motion.div>
 
-        {/*
-          Single globe + list instance, reflowed responsively:
-          • mobile  → flex-col, globe sticky 40vh on top, list below (carousel)
-          • desktop → grid-cols-2 h-[85vh], globe left, list right (bento grid)
-        */}
         <div className="flex flex-col gap-8 md:grid md:h-[85vh] md:grid-cols-2 md:items-center md:gap-8">
-          {/* Globe — sticky on mobile, static cell on desktop */}
           <div className="sticky top-16 z-10 h-[40vh] w-full bg-transparent md:static md:h-[78vh]">
             <div className="relative h-full w-full bg-transparent">
               <StudentGlobe
-                students={STUDENTS}
-                activeId={activeId}
-                onSelect={setActiveId}
+                students={APP_STUDENTS}
+                activeId={selectedStudentId}
+                showDesktopTooltip={isDesktopTooltip}
+                onSelect={handleSelect}
               />
               <div
                 className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,white_70%)]"
@@ -103,16 +135,21 @@ export function GlobeSplitSection() {
             </div>
           </div>
 
-          {/* Student list — vertical bento scroll on desktop, swipe carousel on mobile */}
           <div className="md:max-h-[85vh] md:overflow-y-auto md:pr-1 scrollbar-hide">
             <StudentList
-              students={STUDENTS}
-              activeId={activeId}
-              onSelect={setActiveId}
+              students={APP_STUDENTS}
+              activeId={selectedStudentId}
+              onSelect={handleSelect}
             />
           </div>
         </div>
       </div>
+
+      <StudentBottomSheet
+        student={selectedStudent}
+        open={isSheetOpen}
+        onClose={handleCloseSheet}
+      />
     </section>
   );
 }

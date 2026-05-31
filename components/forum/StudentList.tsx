@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, type Variants } from "framer-motion";
 import { MapPin, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { AppStudent } from "@/components/forum/appStudents";
 
 // ─── Scroll-in stagger variants ────────────────────────────────────────────────
 
@@ -25,37 +26,64 @@ const listCardVariants: Variants = {
   },
 };
 
-// ─── Types & data ──────────────────────────────────────────────────────────────
+// ─── Types (re-export for globe & list consumers) ──────────────────────────────
 
-export interface Student {
-  id: string;
-  name: string;
-  university: string;
-  city: string;
-  /** [latitude, longitude] — used by the 3-D globe */
-  lat: number;
-  lon: number;
-  initials: string;
+export type Student = AppStudent;
+
+function initialsFromName(name: string) {
+  return name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
 }
 
-/** Source hub — every arc on the globe originates here. */
-export const BISHKEK = { lat: 42.87, lon: 74.59 } as const;
+// ─── Avatar with fallback ──────────────────────────────────────────────────────
 
-export const STUDENTS: Student[] = [
-  { id: "tokyo",     name: "Айдана Раимова",     university: "University of Tokyo",   city: "Токио",     lat: 35.68, lon: 139.69, initials: "АР" },
-  { id: "newyork",   name: "Нурлан Исаков",       university: "Columbia University",   city: "Нью-Йорк",  lat: 40.71, lon: -74.0,  initials: "НИ" },
-  { id: "london",    name: "Зарина Бекова",       university: "UCL",                   city: "Лондон",    lat: 51.51, lon: -0.13,  initials: "ЗБ" },
-  { id: "boston",    name: "Алия Исакова",        university: "MIT",                   city: "Бостон",    lat: 42.36, lon: -71.06, initials: "АИ" },
-  { id: "singapore", name: "Айзат Кенжебаева",    university: "NUS",                   city: "Сингапур",  lat: 1.35,  lon: 103.82, initials: "АК" },
-  { id: "berlin",    name: "Тилек Сатыбалдиев",   university: "TU Berlin",             city: "Берлин",    lat: 52.52, lon: 13.4,   initials: "ТС" },
-  { id: "seoul",     name: "Бегайым Осмонова",    university: "Seoul National Univ.",  city: "Сеул",      lat: 37.57, lon: 126.98, initials: "БО" },
-  { id: "toronto",   name: "Чолпон Эркинова",     university: "University of Toronto", city: "Торонто",   lat: 43.65, lon: -79.38, initials: "ЧЭ" },
-];
+function StudentAvatar({
+  student,
+  active,
+}: {
+  student: AppStudent;
+  active: boolean;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (!failed) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={student.avatarUrl}
+        alt=""
+        onError={() => setFailed(true)}
+        className={cn(
+          "size-12 shrink-0 rounded-full border-2 object-cover transition-colors duration-300",
+          active
+            ? "border-[#3B6E8F] bg-white"
+            : "border-white/80 bg-slate-100",
+        )}
+      />
+    );
+  }
+
+  return (
+    <div
+      className={cn(
+        "flex size-12 shrink-0 items-center justify-center rounded-full font-sans text-sm font-bold transition-colors duration-300",
+        active
+          ? "bg-gradient-to-br from-[#3B6E8F] to-[#8ECAE6] text-white"
+          : "bg-[#8ECAE6]/20 text-[#3B6E8F]",
+      )}
+    >
+      {initialsFromName(student.name)}
+    </div>
+  );
+}
 
 // ─── Single student card ────────────────────────────────────────────────────────
 
 interface CardProps {
-  student: Student;
+  student: AppStudent;
   active: boolean;
   onSelect: (id: string) => void;
   cardRef: (el: HTMLButtonElement | null) => void;
@@ -80,7 +108,6 @@ function StudentCard({ student, active, onSelect, cardRef }: CardProps) {
           : "border-white/60 bg-white/40 shadow-[0_10px_30px_-20px_rgba(15,23,42,0.3)] hover:border-[#8ECAE6]/70 hover:bg-white/60",
       )}
     >
-      {/* Soft accent glow when active */}
       <div
         aria-hidden
         className={cn(
@@ -90,16 +117,7 @@ function StudentCard({ student, active, onSelect, cardRef }: CardProps) {
       />
 
       <div className="relative flex items-center gap-3.5">
-        <div
-          className={cn(
-            "flex size-12 shrink-0 items-center justify-center rounded-full font-sans text-sm font-bold transition-colors duration-300",
-            active
-              ? "bg-gradient-to-br from-[#3B6E8F] to-[#8ECAE6] text-white"
-              : "bg-[#8ECAE6]/20 text-[#3B6E8F]",
-          )}
-        >
-          {student.initials}
-        </div>
+        <StudentAvatar student={student} active={active} />
 
         <div className="min-w-0">
           <p className="truncate font-sans text-sm font-semibold text-slate-900 sm:text-base">
@@ -133,7 +151,7 @@ function StudentCard({ student, active, onSelect, cardRef }: CardProps) {
 // ─── Student list (responsive: bento grid ⇆ swipe carousel) ──────────────────────
 
 interface StudentListProps {
-  students: Student[];
+  students: AppStudent[];
   activeId: string | null;
   onSelect: (id: string) => void;
 }
@@ -141,11 +159,8 @@ interface StudentListProps {
 export function StudentList({ students, activeId, onSelect }: StudentListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  // Ignore observer-driven selection while we programmatically scroll a card
-  // into view (prevents a feedback loop between globe → list → globe).
   const isProgrammaticScroll = useRef(false);
 
-  // ── Mobile: detect the centered card and lift it as the active selection ──
   useEffect(() => {
     if (typeof window === "undefined") return;
     const mql = window.matchMedia("(max-width: 767px)");
@@ -176,7 +191,6 @@ export function StudentList({ students, activeId, onSelect }: StudentListProps) 
     return () => observer.disconnect();
   }, [students, activeId, onSelect]);
 
-  // ── When active changes (e.g. via globe click), center its card on mobile ──
   useEffect(() => {
     if (typeof window === "undefined" || !activeId) return;
     const mql = window.matchMedia("(max-width: 767px)");

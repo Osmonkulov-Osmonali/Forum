@@ -2,10 +2,15 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { AdaptiveDpr, AdaptiveEvents, Line } from "@react-three/drei";
+import { AdaptiveDpr, AdaptiveEvents, Html, Line } from "@react-three/drei";
+import { motion } from "framer-motion";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
-import { BISHKEK, type Student } from "@/components/forum/StudentList";
+import {
+  BISHKEK,
+  studentLatLon,
+  type AppStudent,
+} from "@/components/forum/appStudents";
 
 // ─── Palette (light premium) ────────────────────────────────────────────────────
 
@@ -194,15 +199,52 @@ function OrbitalRings() {
 
 type MarkerKind = "source" | "active" | "default";
 
+function MarkerTooltip({ student }: { student: AppStudent }) {
+  return (
+    <Html
+      position={[0, 0.05, 0]}
+      center
+      distanceFactor={6}
+      style={{ pointerEvents: "none" }}
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 320, damping: 24 }}
+        className="
+          flex w-64 translate-x-6 -translate-y-12 items-center gap-3
+          rounded-xl border border-white/20 bg-white/80 p-3
+          shadow-lg backdrop-blur-md
+        "
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={student.avatarUrl}
+          alt=""
+          className="size-10 shrink-0 rounded-full border border-white/60 bg-slate-100 object-cover"
+        />
+        <div className="min-w-0">
+          <p className="truncate text-sm font-bold text-[#0F172A]">{student.name}</p>
+          <p className="truncate text-xs text-[#64748B]">{student.university}</p>
+        </div>
+      </motion.div>
+    </Html>
+  );
+}
+
 function Marker({
   lat,
   lon,
   kind,
+  student,
+  showTooltip,
   onClick,
 }: {
   lat: number;
   lon: number;
   kind: MarkerKind;
+  student?: AppStudent;
+  showTooltip?: boolean;
   onClick?: () => void;
 }) {
   const pos = useMemo(() => latLonToVec3(lat, lon, GLOBE_R + 0.012), [lat, lon]);
@@ -240,6 +282,10 @@ function Marker({
           <sphereGeometry args={[size * 2.4, 16, 16]} />
           <meshBasicMaterial color={color} transparent opacity={0.2} depthWrite={false} />
         </mesh>
+      )}
+
+      {kind === "active" && showTooltip && student && (
+        <MarkerTooltip student={student} />
       )}
     </group>
   );
@@ -291,10 +337,12 @@ function GlobeArc({
 function GlobeGroup({
   students,
   activeId,
+  showDesktopTooltip,
   onSelect,
 }: {
-  students: Student[];
+  students: AppStudent[];
   activeId: string | null;
+  showDesktopTooltip: boolean;
   onSelect: (id: string) => void;
 }) {
   const groupRef = useRef<THREE.Group>(null);
@@ -310,7 +358,8 @@ function GlobeGroup({
     if (!g) return;
 
     if (active) {
-      const dir = latLonToVec3(active.lat, active.lon, 1).normalize();
+      const { lat, lon } = studentLatLon(active);
+      const dir = latLonToVec3(lat, lon, 1).normalize();
       targetQuat.current.setFromUnitVectors(dir, FRONT_DIR);
       // Frame-rate-independent smoothing toward the target orientation.
       const t = 1 - Math.pow(0.0016, delta);
@@ -330,18 +379,30 @@ function GlobeGroup({
       <Marker lat={BISHKEK.lat} lon={BISHKEK.lon} kind="source" />
 
       {/* Student markers */}
-      {students.map((s) => (
-        <Marker
-          key={s.id}
-          lat={s.lat}
-          lon={s.lon}
-          kind={s.id === activeId ? "active" : "default"}
-          onClick={() => onSelect(s.id)}
-        />
-      ))}
+      {students.map((s) => {
+        const { lat, lon } = studentLatLon(s);
+        const isActive = s.id === activeId;
+        return (
+          <Marker
+            key={s.id}
+            lat={lat}
+            lon={lon}
+            kind={isActive ? "active" : "default"}
+            student={isActive ? s : undefined}
+            showTooltip={showDesktopTooltip}
+            onClick={() => onSelect(s.id)}
+          />
+        );
+      })}
 
       {/* Active arc */}
-      {active && <GlobeArc key={active.id} source={BISHKEK} target={active} />}
+      {active && (
+        <GlobeArc
+          key={active.id}
+          source={BISHKEK}
+          target={studentLatLon(active)}
+        />
+      )}
     </group>
   );
 }
@@ -349,13 +410,20 @@ function GlobeGroup({
 // ─── Exported canvas wrapper ──────────────────────────────────────────────────────
 
 interface StudentGlobeProps {
-  students: Student[];
+  students: AppStudent[];
   activeId: string | null;
+  showDesktopTooltip?: boolean;
   onSelect: (id: string) => void;
   className?: string;
 }
 
-export function StudentGlobe({ students, activeId, onSelect, className }: StudentGlobeProps) {
+export function StudentGlobe({
+  students,
+  activeId,
+  showDesktopTooltip = true,
+  onSelect,
+  className,
+}: StudentGlobeProps) {
   return (
     <div className={cn("relative h-full w-full bg-transparent", className)}>
       <Canvas
@@ -376,7 +444,12 @@ export function StudentGlobe({ students, activeId, onSelect, className }: Studen
 
         <Atmosphere />
         <OrbitalRings />
-        <GlobeGroup students={students} activeId={activeId} onSelect={onSelect} />
+        <GlobeGroup
+          students={students}
+          activeId={activeId}
+          showDesktopTooltip={showDesktopTooltip}
+          onSelect={onSelect}
+        />
       </Canvas>
     </div>
   );
