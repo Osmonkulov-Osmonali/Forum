@@ -8,10 +8,10 @@ import { StudentListPlaceholder } from "@/components/StudentListPlaceholder";
 function GlobeSkeleton() {
   return (
     <div
-      className="flex h-full w-full items-center justify-center bg-[#020810]"
+      className="flex h-full w-full items-center justify-center bg-gradient-to-b from-[#F8FAFC] to-[#EFF6FB]"
       aria-hidden
     >
-      <div className="size-[240px] animate-pulse rounded-full bg-[#ff6b00]/5 md:size-[380px]" />
+      <div className="size-[240px] animate-pulse rounded-full bg-[#8ECAE6]/15 md:size-[380px]" />
     </div>
   );
 }
@@ -35,8 +35,8 @@ const GlobeEmbed = dynamic(
  * GlobeSplitSection
  *
  * Desktop (md+):  Two-column sticky split.
- *   Left  — dark Three.js globe, sticky so it stays in view while the
- *            right column scrolls.
+ *   Left  — light Three.js globe (transparent canvas), sticky so it stays in
+ *            view while the right column scrolls.
  *   Right — white scrollable student list with continent filters.
  *
  * Mobile:  Vertical stack — globe (h-[50vh]) followed by the student list.
@@ -50,9 +50,9 @@ export function GlobeSplitSection() {
     >
       {/* ── Desktop layout: sticky split ── */}
       <div className="hidden md:flex">
-        {/* Left column — sticky globe */}
+        {/* Left column — sticky globe (light premium backdrop) */}
         <div
-          className="sticky top-0 h-[90vh] w-1/2 shrink-0 overflow-hidden bg-[#020810]"
+          className="sticky top-0 h-[90vh] w-1/2 shrink-0 overflow-hidden bg-gradient-to-b from-[#F8FAFC] via-white to-[#EFF6FB]"
           aria-hidden="false"
         >
           {/*
@@ -72,7 +72,7 @@ export function GlobeSplitSection() {
       {/* ── Mobile layout: vertical stack ── */}
       <div className="flex flex-col md:hidden">
         {/* Globe — half the viewport height */}
-        <div className="h-[50vh] overflow-hidden bg-[#020810]">
+        <div className="h-[50vh] overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-[#EFF6FB]">
           <GlobeEmbed />
         </div>
 

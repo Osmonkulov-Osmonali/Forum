@@ -69,7 +69,7 @@ function FilterRow({
           {value === f.value && (
             <motion.div
               layoutId="student-filter-indicator"
-              className="absolute inset-x-0 -bottom-px h-0.5 bg-[#ff6b00]"
+              className="absolute inset-x-0 -bottom-px h-0.5 bg-[#3B6E8F]"
               transition={{ duration: 0.2, ease: "easeInOut" }}
             />
           )}
@@ -136,7 +136,7 @@ export function StudentListPlaceholder() {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="mb-3 block font-sans text-xs font-medium uppercase tracking-[0.22em] text-[#ff6b00]"
+          className="mb-3 block font-sans text-xs font-medium uppercase tracking-[0.22em] text-[#3B6E8F]"
         >
           Студенты
         </motion.span>
